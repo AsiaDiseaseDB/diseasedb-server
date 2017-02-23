@@ -1,0 +1,15 @@
+html
+  head
+    title Tree View Component
+    script(src="https://unpkg.com/vue/dist/vue.js")
+  body
+    script(type="text/x-template" id="item-template")
+      li
+        div(v-bind:class="{bold: isFolder}" @click="displayPath" @dblclick="deleteEle") {{model.name}}
+          span(v-if="isFolder") [{{open ? '-' : '+'}}]
+        ul(v-show="open" v-if="isFolder")
+          item(class="item" v-for="model in model.children" v-bind:model="model")
+          li(class="add" @click="addChild") +
+    ul#demo
+      item(class="item" v-bind:model="treeData")
+    script(src="/javascripts/treeview.js")

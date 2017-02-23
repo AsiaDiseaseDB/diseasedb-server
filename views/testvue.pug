@@ -1,0 +1,10 @@
+html
+  head
+    title Disease DB
+    script(src="https://unpkg.com/vue/dist/vue.js")
+  body
+    div#app
+      input(v-model="parentMsg")
+      br
+      child(v-bind:my-message="parentMsg")
+    script(src="/javascripts/testvue.js")
