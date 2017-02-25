@@ -7,7 +7,7 @@ var dbOperation = require('../models/dbOperation.js')(sqlConnect);
 
 //  配置主页
 router.get('/', function(req, res, next) {
-    res.send('');
+    res.render('home');
 });
 
 router.post('/process', function(req, res, next) {
