@@ -1,6 +1,8 @@
 module.exports = function(sqlConnect) {
     var userOperation = new Object();
 
+    //  TODO: 用户不能同名
+
     //  增
     userOperation.addUser = function(name, password) {
         //  TODO:需要做name和password的无害化处理

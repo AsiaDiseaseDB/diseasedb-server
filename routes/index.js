@@ -7,19 +7,7 @@ var dbOperation = require('../models/dbOperation.js')(sqlConnect);
 
 //  配置主页
 router.get('/', function(req, res, next) {
-    if (req.session.isonline) {
-        res.status = 303;
-        res.redirect('/home');
-        return;
-    }
-
-    //  登录失败或者尝试离线直接访问时，显示相关错误信息
-    if (req.session.err != null) {
-        res.render('login', { err: req.session.err });
-        req.session.err = null;
-    } else {
-        res.render('login', { err: "" });
-    }
+    res.send('');
 });
 
 router.post('/process', function(req, res, next) {
@@ -56,23 +44,33 @@ router.post('/process', function(req, res, next) {
         });
 });
 
-router.get('/home', function(req, res, next) {
-    var sess = req.session;
-    //  禁止离线访问并配置错误信息
-    if (!sess.isonline) {
-        res.status(303);
-        req.session.err = 'You are offline';
-        res.redirect('/');
-        return;
-    }
-    res.render('home');
-});
+// CORS demo
+// router.post('/testaxios', function(req, res, next) {
+//     console.log(req.body);
+//     res.json({
+//         returnValue: true
+//     })
+// });
 
-router.post('/testaxios', function(req, res, next) {
-    console.log(req.body);
-    res.json({
-        returnValue: true
-    })
+//  -----------------
+router.post('/loginReq', function(req, res, next) {
+    var user = req.body.username;
+    var pass = req.body.password;
+
+    userOperation.queryUser(user)
+        .then(function(rows) {
+            var returnValue = { success: false };
+            for (var i = 0; i < rows.length; ++i) {
+                if (rows[i].password === pass) {
+                    returnValue.success = true;
+                    break;
+                }
+            }
+            res.json(returnValue);
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
 });
 
 module.exports = router;
