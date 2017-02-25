@@ -68,20 +68,11 @@ router.get('/home', function(req, res, next) {
     res.render('home');
 });
 
-// router.get('/testdb', function(req, res, next) {
-//     var args = ['"Du Zhiheng"', '"STH"', '"China"', '"working report"', '"journal"',
-//                 '"title"', '"author"', 1996, 0, 0, 0, 0, '"No"', '"No"', '"No"', '""'];
-//     dbOperation.addReport(args);
-//     res.send('db item added');
-// });
-
-// learn vue
-router.get('/testvue', function(req, res, next) {
-    res.render('testvue');
-});
-
-router.get('/treeview', function(req, res, next) {
-    res.render('treeview');
+router.post('/testaxios', function(req, res, next) {
+    console.log(req.body);
+    res.json({
+        returnValue: true
+    })
 });
 
 module.exports = router;
