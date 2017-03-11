@@ -3,7 +3,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-
+const restc = require('restc');
 var index = require('./routes/index');
 
 var app = express();
@@ -21,7 +21,9 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
+app.use(restc.express());
+// app.use(restc.koa());
+// app.use(restc.koa2());
 //  配置session
 app.use(session({
     secret: 'keyboard cat',

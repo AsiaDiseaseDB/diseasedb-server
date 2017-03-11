@@ -11,7 +11,6 @@ module.exports = function(sqlConnect) {
         sqlConnect.query(insertSQL, function (err1, res1) {
             if (err1) console.log(err1);
         });
-
     };
 
     //  查
@@ -27,7 +26,7 @@ module.exports = function(sqlConnect) {
     userOperation.queryUser = function(username) {
         //  TODO: username无害化处理
         return new Promise(function(resolve, reject) {
-            var sqlExp = 'SELECT password FROM users WHERE name = ' +
+            var sqlExp = 'SELECT * FROM users WHERE name = ' +
                 sqlConnect.escape(username);
             sqlConnect.query(sqlExp, function(err, rows, fields) {
                 if (err) reject(err);
