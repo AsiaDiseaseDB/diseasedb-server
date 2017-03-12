@@ -116,10 +116,17 @@ router.post('/query', function(req, res, next) {
           returnValue.push(resjson);
         }
         console.log(returnValue);
-        res.json({
-          result: returnValue,
-          err: null
-        });
+        if (rows.length > 0) {
+          res.json({
+            result: returnValue,
+            err: null
+          });
+        } else {
+          res.json({
+            result: null,
+            err: 'Not Found'
+          })
+        }
       })
       .catch(function(err) {
         res.json({
@@ -133,33 +140,36 @@ router.post('/query', function(req, res, next) {
       .then(function(rows) {
         if (rows.length > 0) {
           for (var i = 0; i < rows.length; i++) {
-            // console.log(rows[i]);
             var resjson = {
               ReportID: rows[i].ReportID,
               Reporter: rows[i].Reporter,
               Disease: rows[i].Disease,
               Country: rows[i].Country,
-              DocumentCategory: rows[i][`Document Category`],
+              DocumentCategory: rows[i]['Document Category'],
               Journal: rows[i].Journal,
               Title: rows[i].Title,
               Authors: rows[i].Authors,
-              YearOfPub: rows[i][`Year of Pub`],
+              YearOfPub: rows[i]['Year of Pub'],
               Volume: rows[i].Volume,
               Issue: rows[i].Issue,
-              PageFrom: rows[i][`Page from`],
-              PageTo: rows[i][`Page to`],
-              AuthorContactNeeded: rows[i][`Author contact needed`],
-              OpenAccess: rows[i][`Open access`],
+              PageFrom: rows[i]['Page from'],
+              PageTo: rows[i]['Page to'],
+              AuthorContactNeeded: rows[i]['Author contact needed'],
+              OpenAccess: rows[i]['Open access'],
               Checked: rows[i].checked,
               Note1: rows[i].note1
             };
             returnValue.push(resjson);
           }
-          //  console.log(returnValue);
           res.json({
             result: returnValue,
             err: null
           });
+        } else {
+          res.json({
+            result: null,
+            err: 'Not Found'
+          })
         }
       })
       .catch(function(err) {
