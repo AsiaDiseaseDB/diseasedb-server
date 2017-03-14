@@ -5,6 +5,7 @@ var sqlConnect = require('../models/sqlConnect.js')
 var userOperation = require('../models/userOperation.js')(sqlConnect)
 var dbOperation = require('../models/dbOperation.js')(sqlConnect)
 var formGenerator = require('../models/formGenerator.js')
+var util = require('../models/util.js')
 
 //  配置主页
 router.get('/', function (req, res, next) {
@@ -249,15 +250,21 @@ router.post('/add', function (req, res, next) {
 
   switch (types) {
     case 'Basic Sources':
+      console.log(req.body.data)
+      let volumeData = util.isEmpty(req.body.data.Volume) ? 'null' : req.body.data.Volume
+      let issueData = util.isEmpty(req.body.data.Issue) ? 'null' : req.body.data.Issue
+      let pageFromData = util.isEmpty(req.body.data.PageFrom) ? 'null' : req.body.data.PageFrom
+      let pageToData = util.isEmpty(req.body.data.PageTo) ? 'null' : req.body.data.PageTo
       valuesStr = [
         req.body.data.ReportID, req.body.data.Reporter, req.body.data.Disease,
         req.body.data.Country, req.body.data.DocumentCategory, req.body.data.Journal,
-        req.body.data.Title, req.body.data.Authors, req.body.data.YearOfPub, req.body.data.Volume,
-        req.body.data.Issue, req.body.data.PageFrom, req.body.data.PageTo, req.body.data.AuthorContactNeeded,
+        req.body.data.Title, req.body.data.Authors, req.body.data.YearOfPub, volumeData,
+        issueData, pageFromData, pageToData, req.body.data.AuthorContactNeeded,
         req.body.data.OpenAccess, req.body.data.Checked, req.body.data.Note1
       ]
       break
     case 'Survey Description':
+      //  TODO 处理null值的问题
       valuesStr = [
         req.body.data.SurveyID, req.body.data.BasicSourcesReportID, req.body.data.DataType,
         req.body.data.SurveyType, req.body.data.MonthStart, req.body.data.MonthFinish, req.body.data.YearStart,
@@ -284,7 +291,6 @@ router.post('/add', function (req, res, next) {
       ]
       break
     case 'Intervention Data':
-      id = req.body.data.DiseaseDataDiseaseID
       valuesStr = [
         req.body.data.InterventionID, req.body.data.Group, req.body.data.MonthsAfterBaseline,
         req.body.data.Drug, req.body.data.FrequencyPerYear, req.body.data.PeriodMonths, req.body.data.Coverage,

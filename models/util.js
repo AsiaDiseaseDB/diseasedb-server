@@ -15,5 +15,8 @@ module.exports = {
         resolve(rows)
       })
     })
+  },
+  isEmpty (ele) {
+    return ele === '' || ele === null
   }
 }
