@@ -3,6 +3,47 @@ var util = require('./util.js')
 module.exports = function (sqlConnect) {
   var dbOperation = {}
 
+  dbOperation.leftJoinTables = function (reportid) {
+    var dbCols = '`ReportID`, `Reporter`, `Disease`, `Country`, `Document Category`, `Journal`, ' +
+              '`Title`, `Authors`, `Year of Pub`, `Volume`, `Issue`, `Page from`, `Page to`, ' +
+              '`Author contact needed`, `Open access`, `checked`, `note1`, ' +
+              '`SurveyID`, `Basic sources_ReportID`, `Data type`, ' +
+              '`Survey type`, `Month start`, `Month finish`, ' +
+              '`Year start`, `Year finish`, `note2`, ' +
+              '`LocationID`, `Survey description_Basic sources_ReportID`, ' +
+              '`Survey description_SurveyID`, `ADM1`, `ADM2`, `ADM3`, ' +
+              '`Point name`, `Point type`, `Latitude`, `Longitude`, ' +
+              '`Geo-reference sources`, `note3`, ' +
+              '`DiseaseID`, `Location information_LocationID`, `Species`, ' +
+              '`Diagnostic_symptoms`, `Diagnostic_blood`, `Diagnostic_skin`, ' +
+              '`Diagnostic_stool`, `Num_samples`, `Num_specimen`, ' +
+              '`AgeLower`, `AgeUpper`, ' +
+              '`Num_examine`, `Num_positive`, `Percent_positive`, ' +
+              '`Num_examine_male`, `Num_positive_male`, `Percent_positive_male`, ' +
+              '`Num_examine_female`, `Num_positive_female`, `Percent_positive_female`, ' +
+              '`note4`, `Location information_LocationID1`, `L_ReportID`, ' +
+              '`Location information_Survey description_SurveyID`, ' +
+              '`InterventionID`, `Group`, `Months after baseline`, ' +
+              '`Drug`, `Frequency per year`, `Period (months)`, ' +
+              '`Coverage`, `Other method`, `I_Num_examine`, ' +
+              '`I_Num_positive`, `I_Percent_positive`, `I_Num_examine_male`, ' +
+              '`I_Num_positive_male`, `I_Percent_positive_male`, `I_Num_examine_female`, ' +
+              '`I_Num_positive_female`, `I_Percent_positive_female`, `note5`, ' +
+              '`Disease data_DiseaseID`, ' +
+              '`Disease data_Location information_LocationID1`, ' +
+              '`Disease data_L_ReportID`, ' +
+              '`Disease data_Location information_Survey description_SurveyID`'
+    // var testCols = '`ReportID`, `SurveyID`, `LocationID`, `DiseaseID`, `InterventionID`'
+    var rawSql = 'SELECT ' + dbCols + ' ' +
+                 'FROM `Basic Sources` b ' +
+                 'LEFT JOIN `Survey Description` s ON b.ReportID = s.`Basic sources_ReportID` ' +
+                 'LEFT JOIN `Location Information` l ON s.SurveyID = l.`Survey description_SurveyID` ' +
+                 'LEFT JOIN `Disease Data` d ON l.LocationID = d.`Location information_LocationID1` ' +
+                 'LEFT JOIN `Intervention Data` i ON d.DiseaseID = i.`Disease data_DiseaseID` ' +
+                 'WHERE b.ReportID = ?'
+    return util.exeSqlWithArgs(rawSql, [reportid], sqlConnect)
+  }
+
   dbOperation.queryByReportId = function (reportid) {
     var rawSql = 'SELECT * FROM `Basic sources` WHERE ReportID = ' +
                  sqlConnect.escape(reportid)
@@ -277,9 +318,24 @@ module.exports = function (sqlConnect) {
     }
     return util.exeRawSql(selectStr, sqlConnect)
   }
+
+  dbOperation.exportTable = function (id) {
+    var rawSqlB = 'SELECT * FROM `Basic Sources` WHERE `ReportID` = ?'
+    var rawSqlS = 'SELECT * FROM `Survey Description` WHERE `Basic sources_ReportID` = ?'
+    var rawSqlL = 'SELECT * FROM `Location Information` WHERE `Survey description_Basic sources_ReportID` = ?'
+    var rawSqlD = 'SELECT * FROM `Disease Data` WHERE `L_ReportID` = ?'
+    var rawSqlI = 'SELECT * FROM `Intervention data` WHERE `Disease data_L_ReportID` = ?'
+    return Promise.all([
+      util.exeSqlWithArgs(rawSqlB, [id], sqlConnect),
+      util.exeSqlWithArgs(rawSqlS, [id], sqlConnect),
+      util.exeSqlWithArgs(rawSqlL, [id], sqlConnect),
+      util.exeSqlWithArgs(rawSqlD, [id], sqlConnect),
+      util.exeSqlWithArgs(rawSqlI, [id], sqlConnect)
+    ])
+  }
   //  获取整棵id树，传入根ID
   dbOperation.getIDTree = function (id) {
-    console.log('getidtree')
+    // console.log('getidtree')
     var rawSqlS = 'SELECT `SurveyID` ' +
                   'FROM `Survey Description` WHERE `Basic sources_ReportID` = ?'
     var rawSqlL = 'SELECT `Survey description_SurveyID`' +

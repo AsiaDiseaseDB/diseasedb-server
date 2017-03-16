@@ -1,7 +1,10 @@
 var express = require('express')
+var multer = require('multer')
+var upload = multer({ dest: 'uploads/' })
 var router = express.Router()
 
 var sqlConnect = require('../models/sqlConnect.js')
+var excelOperation = require('../controller/excelOperation.js')(sqlConnect)
 var userOperation = require('../models/userOperation.js')(sqlConnect)
 var dbOperation = require('../models/dbOperation.js')(sqlConnect)
 var formGenerator = require('../models/formGenerator.js')
@@ -12,39 +15,9 @@ router.get('/', function (req, res, next) {
   res.render('home')
 })
 
-router.post('/process', function (req, res, next) {
-  var user = req.body.username
-  var pass = req.body.password
-  res.status(303)
+router.get('/exportexcel', excelOperation.exportExcel)
 
-  //  若已登录，直接跳转
-  if (req.session.isonline === true) {
-    res.redirect('/home')
-    return
-  }
-  userOperation.queryUser(user)
-    .then(function (rows) {
-      for (var i = 0; i < rows.length; ++i) {
-        if (rows[i].password === pass) {
-          //  success
-          req.session.err = null
-          req.session.isonline = true
-          req.session.username = user
-          req.session.password = pass
-          res.redirect('/home')
-          return
-        }
-      }
-      //  登录失败时设置错误信息
-      req.session.err = 'username does not exist or wrong password, go back and try again~'
-      res.redirect('/')
-      // fail
-    })
-    .catch(function (err) {
-      console.log(err)
-      res.redirect('/')
-    })
-})
+router.post('/importexcel', upload.single('report'), excelOperation.importExcel)
 
 //  ---------loginReq--------
 router.post('/loginReq', function (req, res, next) {
@@ -209,7 +182,6 @@ router.post('/getidcontent', function (req, res, next) {
           })
           break
         case 'Location Information':
-          console.log(rows[0])
           res.json({
             data: formGenerator.getLocation(rows[0]),
             err: null
