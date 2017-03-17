@@ -4,11 +4,12 @@ var upload = multer({ dest: 'uploads/' })
 var router = express.Router()
 
 var sqlConnect = require('../models/sqlConnect.js')
-var excelOperation = require('../controller/excelOperation.js')(sqlConnect)
 var userOperation = require('../models/userOperation.js')(sqlConnect)
 var dbOperation = require('../models/dbOperation.js')(sqlConnect)
 var formGenerator = require('../models/formGenerator.js')
-var util = require('../models/util.js')
+// var util = require('../models/util.js')
+var excelOperation = require('../controller/excelOperation.js')(sqlConnect)
+var getValueString = require('../controller/getValueString')
 
 //  配置主页
 router.get('/', function (req, res, next) {
@@ -216,65 +217,10 @@ router.post('/getidcontent', function (req, res, next) {
 
 // -------增添操作----add---------------
 router.post('/add', function (req, res, next) {
-  var types = req.body.type
-  console.log(types)
-  var valuesStr = ''
-
-  switch (types) {
-    case 'Basic Sources':
-      console.log(req.body.data)
-      let volumeData = util.isEmpty(req.body.data.Volume) ? 'null' : req.body.data.Volume
-      let issueData = util.isEmpty(req.body.data.Issue) ? 'null' : req.body.data.Issue
-      let pageFromData = util.isEmpty(req.body.data.PageFrom) ? 'null' : req.body.data.PageFrom
-      let pageToData = util.isEmpty(req.body.data.PageTo) ? 'null' : req.body.data.PageTo
-      valuesStr = [
-        req.body.data.ReportID, req.body.data.Reporter, req.body.data.Disease,
-        req.body.data.Country, req.body.data.DocumentCategory, req.body.data.Journal,
-        req.body.data.Title, req.body.data.Authors, req.body.data.YearOfPub, volumeData,
-        issueData, pageFromData, pageToData, req.body.data.AuthorContactNeeded,
-        req.body.data.OpenAccess, req.body.data.Checked, req.body.data.Note1
-      ]
-      break
-    case 'Survey Description':
-      //  TODO 处理null值的问题
-      valuesStr = [
-        req.body.data.SurveyID, req.body.data.BasicSourcesReportID, req.body.data.DataType,
-        req.body.data.SurveyType, req.body.data.MonthStart, req.body.data.MonthFinish, req.body.data.YearStart,
-        req.body.data.YearFinish, req.body.data.Note2
-      ]
-      break
-    case 'Location Information':
-      valuesStr = [req.body.data.LocationID, req.body.data.SurveyDescriptionBasicSourcesReportID,
-        req.body.data.SurveyDescriptionSurveyID, req.body.data.ADM1, req.body.data.ADM2,
-        req.body.data.ADM3, req.body.data.PointName, req.body.data.PointType, req.body.data.Latitude,
-        req.body.data.Longitude, req.body.data.GeoReferenceSources, req.body.data.Note3
-      ]
-      break
-    case 'Disease Data':
-      valuesStr = [req.body.data.DiseaseID, req.body.data.LocationInformationLocationID,
-        req.body.data.Species, req.body.data.DiagnosticSymptoms, req.body.data.DiagnosticBlood,
-        req.body.data.DiagnosticSkin, req.body.data.DiagnosticStool, req.body.data.NumSamples,
-        req.body.data.NumSpecimen, req.body.data.AgeLower, req.body.data.AgeUpper,
-        req.body.data.NumExamine, req.body.data.NumPositive, req.body.data.PercentPositive,
-        req.body.data.NumExamineMale, req.body.data.NumPositiveMale, req.body.data.PercentPositiveMale,
-        req.body.data.NumExamineFemale, req.body.data.NumPositiveFemale, req.body.data.PercentPositiveFemale,
-        req.body.data.Note4, req.body.data.LocationInformationLocationID1, req.body.data.LReportID,
-        req.body.data.LocationInformationSurveyDescriptionSurveyID
-      ]
-      break
-    case 'Intervention Data':
-      valuesStr = [
-        req.body.data.InterventionID, req.body.data.Group, req.body.data.MonthsAfterBaseline,
-        req.body.data.Drug, req.body.data.FrequencyPerYear, req.body.data.PeriodMonths, req.body.data.Coverage,
-        req.body.data.OtherMethod, req.body.data.INumExamine, req.body.data.INumPositive, req.body.data.IPercentPositive,
-        req.body.data.INumExamineMale, req.body.data.INumPositiveMale, req.body.data.IPercentPositiveMale,
-        req.body.data.INumExamineFemale, req.body.data.INumPositiveFemale, req.body.data.IPercentPositiveFemale,
-        req.body.data.Note5, req.body.data.DiseaseDataDiseaseID, req.body.data.DiseaseDataLocationInformationLocationID1,
-        req.body.data.DiseaseDataLReportID, req.body.data.DiseaseDataLocationInformationSurveyDescriptionSurveyID
-      ]
-      break
-  }
-  dbOperation.add(valuesStr, types)
+  // var types = req.body.type
+  // console.log(types)
+  var valuesStr = getValueString(req.body.type, req.body.data)
+  dbOperation.add(valuesStr, req.body.type)
     .then(function (rows) {
       if (rows) {
         res.json({ success: true, err: null })

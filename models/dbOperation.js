@@ -319,20 +319,20 @@ module.exports = function (sqlConnect) {
     return util.exeRawSql(selectStr, sqlConnect)
   }
 
-  dbOperation.exportTable = function (id) {
-    var rawSqlB = 'SELECT * FROM `Basic Sources` WHERE `ReportID` = ?'
-    var rawSqlS = 'SELECT * FROM `Survey Description` WHERE `Basic sources_ReportID` = ?'
-    var rawSqlL = 'SELECT * FROM `Location Information` WHERE `Survey description_Basic sources_ReportID` = ?'
-    var rawSqlD = 'SELECT * FROM `Disease Data` WHERE `L_ReportID` = ?'
-    var rawSqlI = 'SELECT * FROM `Intervention data` WHERE `Disease data_L_ReportID` = ?'
-    return Promise.all([
-      util.exeSqlWithArgs(rawSqlB, [id], sqlConnect),
-      util.exeSqlWithArgs(rawSqlS, [id], sqlConnect),
-      util.exeSqlWithArgs(rawSqlL, [id], sqlConnect),
-      util.exeSqlWithArgs(rawSqlD, [id], sqlConnect),
-      util.exeSqlWithArgs(rawSqlI, [id], sqlConnect)
-    ])
-  }
+  // dbOperation.exportTable = function (id) {
+  //   var rawSqlB = 'SELECT * FROM `Basic Sources` WHERE `ReportID` = ?'
+  //   var rawSqlS = 'SELECT * FROM `Survey Description` WHERE `Basic sources_ReportID` = ?'
+  //   var rawSqlL = 'SELECT * FROM `Location Information` WHERE `Survey description_Basic sources_ReportID` = ?'
+  //   var rawSqlD = 'SELECT * FROM `Disease Data` WHERE `L_ReportID` = ?'
+  //   var rawSqlI = 'SELECT * FROM `Intervention data` WHERE `Disease data_L_ReportID` = ?'
+  //   return Promise.all([
+  //     util.exeSqlWithArgs(rawSqlB, [id], sqlConnect),
+  //     util.exeSqlWithArgs(rawSqlS, [id], sqlConnect),
+  //     util.exeSqlWithArgs(rawSqlL, [id], sqlConnect),
+  //     util.exeSqlWithArgs(rawSqlD, [id], sqlConnect),
+  //     util.exeSqlWithArgs(rawSqlI, [id], sqlConnect)
+  //   ])
+  // }
   //  获取整棵id树，传入根ID
   dbOperation.getIDTree = function (id) {
     // console.log('getidtree')
