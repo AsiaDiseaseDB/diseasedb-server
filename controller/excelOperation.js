@@ -326,7 +326,6 @@ module.exports = function (sqlConnect) {
         }
         Promise.all(addPromises)
           .then((rows) => {
-            console.log('success ~~~~~~~~')
             res.json({ success: true, err: null })
           })
           .catch((err) => {
@@ -337,6 +336,73 @@ module.exports = function (sqlConnect) {
       } else {
         res.json({ success: false, err: 'no type matched' })
       }
+    },
+    importTable (req, res) {
+      let workbook = XLSX.readFile(req.file.path)
+      let worksheet = workbook.Sheets[workbook.SheetNames[0]]
+      let jsonArr = XLSX.utils.sheet_to_json(worksheet)
+      let addPromises = []
+      let valuesStr = ''
+      let [bid, sid, lid, did] = [-1, -1, -1, -1]
+      for (let i in jsonArr) {
+        let id = dbState.getNewId(req.body.type)
+        console.log(req.body.bid)
+        switch (req.body.type) {
+          case 'Basic Sources':
+            bid = parseInt(req.body.bid)
+            jsonArr[i].SurveyID = id
+            jsonArr[i].BasicSourcesReportID = bid
+            valuesStr = getValueString('Survey Description',
+                                           getHandledData('Survey Description', jsonArr[i]))
+            addPromises.push(dbOperation.add(valuesStr, 'Survey Description'))
+            break
+          case 'Survey Description':
+            bid = parseInt(req.body.bid)
+            sid = parseInt(req.body.sid)
+            jsonArr[i].LocationID = id
+            jsonArr[i].SurveyDescriptionBasicSourcesReportID = bid
+            jsonArr[i].SurveyDescriptionSurveyID = sid
+            valuesStr = getValueString('Location Information',
+                                           getHandledData('Location Information', jsonArr[i]))
+            addPromises.push(dbOperation.add(valuesStr, 'Location Information'))
+            break
+          case 'Location Information':
+            bid = parseInt(req.body.bid)
+            sid = parseInt(req.body.sid)
+            lid = parseInt(req.body.lid)
+            jsonArr[i].DiseaseID = id
+            jsonArr[i].LReportID = bid
+            jsonArr[i].LocationInformationSurveyDescriptionSurveyID = sid
+            jsonArr[i].LocationInformationLocationID1 = lid
+            valuesStr = getValueString('Disease Data',
+                                           getHandledData('Disease Data', jsonArr[i]))
+            addPromises.push(dbOperation.add(valuesStr, 'Disease Data'))
+            break
+          case 'Disease Data':
+            bid = parseInt(req.body.bid)
+            sid = parseInt(req.body.sid)
+            lid = parseInt(req.body.lid)
+            did = parseInt(req.body.did)
+            jsonArr[i].InterventionID = id
+            jsonArr[i].DiseaseDataLReportID = bid
+            jsonArr[i].DiseaseDataLocationInformationSurveyDescriptionSurveyID = sid
+            jsonArr[i].DiseaseDataLocationInformationLocationID1 = lid
+            jsonArr[i].DiseaseDataDiseaseID = did
+            valuesStr = getValueString('Intervention Data',
+                                           getHandledData('Intervention Data', jsonArr[i]))
+            addPromises.push(dbOperation.add(valuesStr, 'Intervention Data'))
+            break
+        }
+      }
+      Promise.all(addPromises)
+        .then((rows) => {
+          res.json({ success: true, err: null })
+        })
+        .catch((err) => {
+          console.log('batch input catch error')
+          console.log(err)
+          res.json({ success: false, err: err })
+        })
     }
   }
 }

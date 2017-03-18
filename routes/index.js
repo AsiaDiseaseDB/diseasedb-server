@@ -7,6 +7,7 @@ var sqlConnect = require('../models/sqlConnect.js')
 var userOperation = require('../models/userOperation.js')(sqlConnect)
 var dbOperation = require('../models/dbOperation.js')(sqlConnect)
 var formGenerator = require('../models/formGenerator.js')
+var dbState = require('../models/dbState.js')
 // var util = require('../models/util.js')
 var excelOperation = require('../controller/excelOperation.js')(sqlConnect)
 var getValueString = require('../controller/getValueString')
@@ -19,6 +20,8 @@ router.get('/', function (req, res, next) {
 router.get('/exportexcel', excelOperation.exportExcel)
 
 router.post('/importexcel', upload.single('report'), excelOperation.importExcel)
+
+router.post('/importtable', upload.single('report'), excelOperation.importTable)
 
 //  ---------loginReq--------
 router.post('/loginReq', function (req, res, next) {
@@ -269,23 +272,24 @@ router.post('/edit', function (req, res, next) {
 
 router.post('/getid', function (req, res, next) {
   var type = req.body.type
-  dbOperation.getMaxID(type)
-    .then(function (rows) {
-      var num = 1
-      if (rows) {
-        num = rows[0].ID + 1
-      }
-      var returnValue = { id: num }
-      console.log(returnValue)
-      res.json(returnValue)
-    })
-    .catch((err) => {
-      console.log(err)
-      res.json({
-        id: -1,
-        err: err
-      })
-    })
+  res.json({ id: dbState.getNewId(type) })
+  // dbOperation.getMaxID(type)
+  //   .then(function (rows) {
+  //     var num = 1
+  //     if (rows) {
+  //       num = rows[0].ID + 1
+  //     }
+  //     var returnValue = { id: num }
+  //     console.log(returnValue)
+  //     res.json(returnValue)
+  //   })
+  //   .catch((err) => {
+  //     console.log(err)
+  //     res.json({
+  //       id: -1,
+  //       err: err
+  //     })
+  //   })
 })
 
 router.post('/getidtree', function (req, res, next) {

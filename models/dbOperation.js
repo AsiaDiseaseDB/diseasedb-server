@@ -1,5 +1,29 @@
 var util = require('./util.js')
 
+const bColumns = '`ReportID`,`Reporter`,`Disease`,`Country`,`Document Category`,`Journal`,' +
+               '`Title`,`Authors`,`Year of Pub`,`Volume`,`Issue`,`Page from`,`Page to`,' +
+               '`Author contact needed`,`Open access`,`checked`,`note1`'
+
+const sColumns = '`SurveyID`,`Basic sources_ReportID`,`Data type`,`Survey type`,' +
+               '`Month start`,`Month finish`,`Year start`,`Year finish`,`note2`'
+
+const lColumns = '`LocationID`,`Survey description_Basic sources_ReportID`,`Survey description_SurveyID`,' +
+               '`ADM1`,`ADM2`,`ADM3`,`Point name`,`Point type`,`Latitude`,`Longitude`,`Geo-reference sources`,`note3`'
+
+const dColumns = '`DiseaseID`,`Location information_LocationID`,`Species`,`Diagnostic_symptoms`,' +
+               '`Diagnostic_blood`,`Diagnostic_skin`,`Diagnostic_stool`,`Num_samples`,`Num_specimen`,' +
+               '`AgeLower`,`AgeUpper`,`Num_examine`,`Num_positive`,`Percent_positive`,`Num_examine_male`,' +
+               '`Num_positive_male`,`Percent_positive_male`,`Num_examine_female`,`Num_positive_female`,' +
+               '`Percent_positive_female`,`note4`,`Location information_LocationID1`,`L_ReportID`,' +
+               '`Location information_Survey description_SurveyID`'
+
+const iColumns = '`InterventionID`,`Group`,`Months after baseline`,`Drug`,`Frequency per year`,`Period (months)`,' +
+               '`Coverage`,`Other method`,`I_Num_examine`,`I_Num_positive`,`I_Percent_positive`,' +
+               '`I_Num_examine_male`,`I_Num_positive_male`,`I_Percent_positive_male`,`I_Num_examine_female`,' +
+               '`I_Num_positive_female`,`I_Percent_positive_female`,`note5`,`Disease data_DiseaseID`,' +
+               '`Disease data_Location information_LocationID1`,`Disease data_L_ReportID`,' +
+               '`Disease data_Location information_Survey description_SurveyID`'
+
 module.exports = function (sqlConnect) {
   var dbOperation = {}
 
@@ -92,55 +116,35 @@ module.exports = function (sqlConnect) {
     return util.exeRawSql(rawSql, sqlConnect)
   }
 
-  dbOperation.check = function (type, id) {
-    var rawSql = ''
-    if (type === 'Survey Description') {
-      rawSql = 'SELECT * FROM `Basic sources` WHERE `ReportID`=' + id
-    } else if (type === 'Location Information') {
-      rawSql = 'SELECT * FROM `Survey description` WHERE `SurveyID`=' + id
-    } else if (type === 'Disease Data') {
-      rawSql = 'SELECT * FROM `Location information` WHERE `LocationID1`=' + id
-    } else if (type === 'Intervention Data') {
-      rawSql = 'SELECT * FROM `Disease Data` WHERE `DiseaseID`=' + id
-    }
-    return util.exeRawSql(rawSql, sqlConnect)
-  }
+  // dbOperation.check = function (type, id) {
+  //   var rawSql = ''
+  //   if (type === 'Survey Description') {
+  //     rawSql = 'SELECT * FROM `Basic sources` WHERE `ReportID`=' + id
+  //   } else if (type === 'Location Information') {
+  //     rawSql = 'SELECT * FROM `Survey description` WHERE `SurveyID`=' + id
+  //   } else if (type === 'Disease Data') {
+  //     rawSql = 'SELECT * FROM `Location information` WHERE `LocationID1`=' + id
+  //   } else if (type === 'Intervention Data') {
+  //     rawSql = 'SELECT * FROM `Disease Data` WHERE `DiseaseID`=' + id
+  //   }
+  //   return util.exeRawSql(rawSql, sqlConnect)
+  // }
 
   dbOperation.add = function (args, type) {
-    var rowSQl = null
-    var columns = null
+    var rawSQl = ''
     if (type === 'Basic Sources') {
-      columns = '`ReportID`,`Reporter`,`Disease`,`Country`,`Document Category`,`Journal`,' +
-        '`Title`,`Authors`,`Year of Pub`,`Volume`,`Issue`,`Page from`,`Page to`,' +
-        '`Author contact needed`,`Open access`,`checked`,`note1`'
-      rowSQl = 'insert into `Basic Sources` (' + columns + ') values(' + args + ')'
+      rawSQl = 'INSERT INTO `Basic Sources` (' + bColumns + ') values(' + args + ')'
     } else if (type === 'Survey Description') {
-      columns = '`SurveyID`,`Basic sources_ReportID`,`Data type`,`Survey type`,' +
-        '`Month start`,`Month finish`,`Year start`,`Year finish`,`note2`'
-      rowSQl = 'insert into `Survey description` (' + columns + ') values(' + args + ')'
+      rawSQl = 'INSERT INTO `Survey description` (' + sColumns + ') values(' + args + ')'
     } else if (type === 'Location Information') {
-      columns = '`LocationID`,`Survey description_Basic sources_ReportID`,`Survey description_SurveyID`,' +
-        '`ADM1`,`ADM2`,`ADM3`,`Point name`,`Point type`,`Latitude`,`Longitude`,`Geo-reference sources`,`note3`'
-      rowSQl = 'insert into `Location information` (' + columns + ') values(' + args + ')'
+      rawSQl = 'INSERT INTO `Location information` (' + lColumns + ') values(' + args + ')'
     } else if (type === 'Disease Data') {
-      columns = '`DiseaseID`,`Location information_LocationID`,`Species`,`Diagnostic_symptoms`,' +
-        '`Diagnostic_blood`,`Diagnostic_skin`,`Diagnostic_stool`,`Num_samples`,`Num_specimen`,' +
-        '`AgeLower`,`AgeUpper`,`Num_examine`,`Num_positive`,`Percent_positive`,`Num_examine_male`,' +
-        '`Num_positive_male`,`Percent_positive_male`,`Num_examine_female`,`Num_positive_female`,' +
-        '`Percent_positive_female`,`note4`,`Location information_LocationID1`,`L_ReportID`,' +
-        '`Location information_Survey description_SurveyID`'
-      rowSQl = 'insert into `Disease data` (' + columns + ') values(' + args + ')'
+      rawSQl = 'INSERT INTO `Disease data` (' + dColumns + ') values(' + args + ')'
     } else if (type === 'Intervention Data') {
-      columns = '`InterventionID`,`Group`,`Months after baseline`,`Drug`,`Frequency per year`,`Period (months)`,' +
-        '`Coverage`,`Other method`,`I_Num_examine`,`I_Num_positive`,`I_Percent_positive`,' +
-        '`I_Num_examine_male`,`I_Num_positive_male`,`I_Percent_positive_male`,`I_Num_examine_female`,' +
-        '`I_Num_positive_female`,`I_Percent_positive_female`,`note5`,`Disease data_DiseaseID`,' +
-        '`Disease data_Location information_LocationID1`,`Disease data_L_ReportID`,' +
-        '`Disease data_Location information_Survey description_SurveyID`'
-      rowSQl = 'insert into `Intervention data` (' + columns + ') values(' + args + ')'
+      rawSQl = 'INSERT INTO `Intervention data` (' + iColumns + ') values(' + args + ')'
     }
-    console.log(rowSQl)
-    return util.exeRawSql(rowSQl, sqlConnect)
+    console.log(rawSQl)
+    return util.exeRawSql(rawSQl, sqlConnect)
   }
 
   dbOperation.delete = function (type, id) {
@@ -199,59 +203,59 @@ module.exports = function (sqlConnect) {
     if (type === 'Basic Sources') {
       id = newData.ReportID
       sql = 'update `basic sources` set ' +
-        '`Reporter` = \'' + newData.Reporter +
-        '\',`Disease`= \'' + newData.Disease +
-        '\',`Country`= \'' + newData.Country +
-        '\',`Document Category`= \'' + newData.DocumentCategory +
-        '\',`Journal` = \'' + newData.Journal +
-        '\',`Title` = \'' + newData.Title +
-        '\',`Authors`= \'' + newData.Authors +
-        '\',`Year of Pub`=' + newData.YearOfPub +
+        '`Reporter` = ' + newData.Reporter +
+        ',`Disease`= ' + newData.Disease +
+        ',`Country`= ' + newData.Country +
+        ',`Document Category`= ' + newData.DocumentCategory +
+        ',`Journal` = ' + newData.Journal +
+        ',`Title` = ' + newData.Title +
+        ',`Authors`= ' + newData.Authors +
+        ',`Year of Pub`=' + newData.YearOfPub +
         ',`Volume`=' + newData.Volume +
         ',`Issue`=' + newData.Issue +
         ',`Page from`=' + newData.PageFrom +
         ',`Page to`=' + newData.PageTo +
-        ',`Author contact needed`= \'' + newData.AuthorContactNeeded +
-        '\',`Open access`= \'' + newData.OpenAccess +
-        '\',`checked`= \'' + newData.Checked +
-        '\',`note1`= \'' + newData.Note1 + '\' where ReportID =' + id
+        ',`Author contact needed`= ' + newData.AuthorContactNeeded +
+        ',`Open access`= ' + newData.OpenAccess +
+        ',`checked`= ' + newData.Checked +
+        ',`note1`= ' + newData.Note1 + ' where ReportID =' + id
     } else if (type === 'Survey Description') {
       id = newData.SurveyID
       sql = 'update `' + type + '` set ' + '`Basic sources_ReportID`= ' +
         newData.BasicSourcesReportID +
-        ',`Data type`= \'' + newData.DataType +
-        '\',`Survey type`= \'' + newData.SurveyType +
-        '\',`Month start`= \'' + newData.MonthStart +
-        '\',`Month finish`= \'' + newData.MonthFinish +
-        '\',`Year start`= ' + newData.YearStart +
+        ',`Data type`= ' + newData.DataType +
+        ',`Survey type`= ' + newData.SurveyType +
+        ',`Month start`= ' + newData.MonthStart +
+        ',`Month finish`= ' + newData.MonthFinish +
+        ',`Year start`= ' + newData.YearStart +
         ',`Year finish`= ' + newData.YearFinish +
-        ',`note2`= \'' + newData.Note2 + '\' where SurveyID = ' + id
+        ',`note2`= ' + newData.Note2 + ' where SurveyID = ' + id
     } else if (type === 'Location Information') {
       id = newData.LocationID
       sql = 'update `' + type + '` set ' +
         '`Survey description_Basic sources_ReportID`= ' + newData.SurveyDescriptionBasicSourcesReportID +
         ',`Survey description_SurveyID`= ' + newData.SurveyDescriptionSurveyID +
-        ',`ADM1`= \'' + newData.ADM1 +
-        '\',`ADM2`= \'' + newData.ADM2 +
-        '\',`ADM3`= \'' + newData.ADM3 +
-        '\',`Point name`= \'' + newData.PointName +
-        '\',`Point type`= \'' + newData.PointType +
-        '\',`Latitude`= ' + newData.Latitude +
+        ',`ADM1`= ' + newData.ADM1 +
+        ',`ADM2`= ' + newData.ADM2 +
+        ',`ADM3`= ' + newData.ADM3 +
+        ',`Point name`= ' + newData.PointName +
+        ',`Point type`= ' + newData.PointType +
+        ',`Latitude`= ' + newData.Latitude +
         ',`Longitude`= ' + newData.Longitude +
-        ',`Geo-reference sources`= \'' + newData.GeoReferenceSources +
-        '\',`note3`= \'' + newData.Note3 + '\' where LocationID = ' + id
+        ',`Geo-reference sources`= ' + newData.GeoReferenceSources +
+        ',`note3`= ' + newData.Note3 + ' where LocationID = ' + id
     } else if (type === 'Disease Data') {
       id = newData.DiseaseID
       sql = 'update `' + type + '` set ' +
-        '`Location information_LocationID`= \'' + newData.LocationInformationLocationID +
-        '\',`Species`= \'' + newData.Species +
-        '\',`Diagnostic_symptoms`= \'' + newData.DiagnosticSymptoms +
-        '\',`Diagnostic_blood`= \'' + newData.DiagnosticBlood +
-        '\',`Diagnostic_skin`= \'' + newData.DiagnosticSkin +
-        '\',`Diagnostic_stool`= \'' + newData.DiagnosticStool +
-        '\',`Num_samples`= \'' + newData.NumSamples +
-        '\',`Num_specimen`= \'' + newData.NumSpecimen +
-        '\',`AgeLower`= ' + newData.AgeLower +
+        '`Location information_LocationID`= ' + newData.LocationInformationLocationID +
+        ',`Species`= ' + newData.Species +
+        ',`Diagnostic_symptoms`= ' + newData.DiagnosticSymptoms +
+        ',`Diagnostic_blood`= ' + newData.DiagnosticBlood +
+        ',`Diagnostic_skin`= ' + newData.DiagnosticSkin +
+        ',`Diagnostic_stool`= ' + newData.DiagnosticStool +
+        ',`Num_samples`= ' + newData.NumSamples +
+        ',`Num_specimen`= ' + newData.NumSpecimen +
+        ',`AgeLower`= ' + newData.AgeLower +
         ',`AgeUpper`= ' + newData.AgeUpper +
         ',`Num_examine`= ' + newData.NumExamine +
         ',`Num_positive`= ' + newData.NumPositive +
@@ -262,22 +266,22 @@ module.exports = function (sqlConnect) {
         ',`Num_examine_female`= ' + newData.NumExamineFemale +
         ',`Num_positive_female`= ' + newData.NumPositiveFemale +
         ',`Percent_positive_female`= ' + newData.PercentPositiveFemale +
-        ',`note4`= \'' + newData.Note4 +
-        '\',`Location information_LocationID1`= ' + newData.LocationInformationLocationID1 +
+        ',`note4`= ' + newData.Note4 +
+        ',`Location information_LocationID1`= ' + newData.LocationInformationLocationID1 +
         ',`L_ReportID`= ' + newData.LReportID +
         ',`Location information_Survey description_SurveyID`= ' + newData.LocationInformationSurveyDescriptionSurveyID +
         ' where DiseaseID = ' + id
     } else if (type === 'Intervention Data') {
       id = newData.InterventionID
       sql = 'update `Intervention data` set ' +
-        '`Group`= \'' + newData.Group +
-        '\',`Months after baseline`= ' + newData.MonthsAfterBaseline +
-        ',`Drug`= \'' + newData.Drug +
-        '\',`Frequency per year`= ' + newData.FrequencyPerYear +
+        '`Group`= ' + newData.Group +
+        ',`Months after baseline`= ' + newData.MonthsAfterBaseline +
+        ',`Drug`= ' + newData.Drug +
+        ',`Frequency per year`= ' + newData.FrequencyPerYear +
         ',`Period (months)`= ' + newData.PeriodMonths +
         ',`Coverage`= ' + newData.Coverage +
-        ',`Other method`= \'' + newData.OtherMethod +
-        '\',`I_Num_examine`= ' + newData.INumExamine +
+        ',`Other method`= ' + newData.OtherMethod +
+        ',`I_Num_examine`= ' + newData.INumExamine +
         ',`I_Num_positive`= ' + newData.INumPositive +
         ',`I_Percent_positive`= ' + newData.IPercentPositive +
         ',`I_Num_examine_male`= ' + newData.INumExamineMale +
@@ -286,12 +290,12 @@ module.exports = function (sqlConnect) {
         ',`I_Num_examine_female`= ' + newData.INumExamineFemale +
         ',`I_Num_positive_female`= ' + newData.INumPositiveFemale +
         ',`I_Percent_positive_female`= ' + newData.IPercentPositiveFemale +
-        ',`note5`= \'' + newData.Note5 +
-        '\',`Disease data_DiseaseID`= ' + newData.DiseaseDataDiseaseID +
+        ',`note5`= ' + newData.Note5 +
+        ',`Disease data_DiseaseID`= ' + newData.DiseaseDataDiseaseID +
         ',`Disease data_Location information_LocationID1`= ' + newData.DiseaseDataLocationInformationLocationID1 +
         ',`Disease data_L_ReportID`= ' + newData.DiseaseDataLReportID +
         ',`Disease data_Location information_Survey description_SurveyID`= ' + newData.DiseaseDataLocationInformationSurveyDescriptionSurveyID +
-        ' where InterventionID = ' + id
+        ' WHERE InterventionID = ' + id
     } else {
       console.log('err >> not match')
     }
