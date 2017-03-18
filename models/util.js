@@ -17,6 +17,6 @@ module.exports = {
     })
   },
   isEmpty (ele) {
-    return ele === '' || ele === null
+    return ele === '' || ele === null || ele === undefined
   }
 }
