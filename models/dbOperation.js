@@ -116,20 +116,6 @@ module.exports = function (sqlConnect) {
     return util.exeRawSql(rawSql, sqlConnect)
   }
 
-  // dbOperation.check = function (type, id) {
-  //   var rawSql = ''
-  //   if (type === 'Survey Description') {
-  //     rawSql = 'SELECT * FROM `Basic sources` WHERE `ReportID`=' + id
-  //   } else if (type === 'Location Information') {
-  //     rawSql = 'SELECT * FROM `Survey description` WHERE `SurveyID`=' + id
-  //   } else if (type === 'Disease Data') {
-  //     rawSql = 'SELECT * FROM `Location information` WHERE `LocationID1`=' + id
-  //   } else if (type === 'Intervention Data') {
-  //     rawSql = 'SELECT * FROM `Disease Data` WHERE `DiseaseID`=' + id
-  //   }
-  //   return util.exeRawSql(rawSql, sqlConnect)
-  // }
-
   dbOperation.add = function (args, type) {
     var rawSQl = ''
     if (type === 'Basic Sources') {
@@ -149,7 +135,7 @@ module.exports = function (sqlConnect) {
 
   dbOperation.delete = function (type, id) {
     if (type === 'Basic Sources') {
-      let deletesql1 = 'DELETE from `Intervention data` WHERE `Disease data_Location information_LocationID1` = ' + id + ';'
+      let deletesql1 = 'DELETE from `Intervention data` WHERE `Disease data_L_ReportID` = ' + id + ';'
       let deletesql2 = 'DELETE from `Disease data` WHERE `L_ReportID` = ' + id + ';'
       let deletesql3 = 'DELETE from `Location information` WHERE `Survey description_Basic sources_ReportID` = ' + id + ';'
       let deletesql4 = 'DELETE from `Survey description` WHERE `Basic sources_ReportID` = ' + id + ';'

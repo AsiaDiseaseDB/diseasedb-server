@@ -3,7 +3,10 @@ module.exports = {
   exeRawSql (rawSql, sqlConnect) {
     return new Promise((resolve, reject) => {
       sqlConnect.query(rawSql, (err, rows, fields) => {
-        if (err) reject(err)
+        if (err) {
+          console.log(err)
+          reject(err)
+        }
         resolve(rows)
       })
     })
