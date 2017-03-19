@@ -30,46 +30,27 @@ router.post('/loginReq', function (req, res, next) {
   var returnValue = {
     success: false,
     err: null,
-    authority: {
-      write: false,
-      query: false,
-      modity: false,
-      extract: false
-    }
+    id: -1,
+    authority: -1,
+    username: ''
   }
   userOperation.queryUser(user)
     .then(function (rows) {
       if (rows.length > 0) {
         if (rows[0].password === pass) {
           returnValue.success = true
-          var q = rows[0].authority
-          switch (q) {
-            case 4:
-              returnValue.authority.extract = true
-              returnValue.authority.modity = true
-              returnValue.authority.query = true
-              returnValue.authority.write = true
-              break
-            case 3:
-              returnValue.authority.modity = true
-              returnValue.authority.query = true
-              returnValue.authority.write = true
-              break
-            case 2:
-              returnValue.authority.query = true
-              returnValue.authority.write = true
-              break
-            case 1:
-              returnValue.authority.write = true
-              break
-          }
+          returnValue.id = rows[0].id
+          returnValue.authority = rows[0].authority  // 1 || 2 || 3 || 4
+          returnValue.username = rows[0].name
         } else {
           returnValue.err = '用户登录密码错误！！！'
           returnValue.authority = null
+          returnValue.username = null
         }
       } else {
         returnValue.err = '用户名错误或用户不存在！！！'
         returnValue.authority = null
+        returnValue.username = null
       }
       res.json(returnValue)
     })
@@ -77,7 +58,44 @@ router.post('/loginReq', function (req, res, next) {
       res.json({
         success: false,
         err: err,
-        authority: null
+        authority: null,
+        username: null
+      })
+    })
+})
+
+router.post('/register', function (req, res, next) {
+  var user = req.body.username
+  var pass = req.body.password
+  var authority = req.body.authority
+  userOperation.queryUser(user)
+    .then((rows) => {
+      if (rows.length > 0) {
+        res.json({
+          success: false,
+          err: '该用户名已被注册'
+        })
+      } else {
+        userOperation.addUser(user, pass, authority)
+          .then((rows2) => {
+            res.json({
+              success: true,
+              err: null
+            })
+          })
+          .catch((err) => {
+            console.log(err)
+            res.json({
+              success: false,
+              err: err
+            })
+          })
+      }
+    })
+    .catch((err) => {
+      res.json({
+        success: false,
+        err: err
       })
     })
 })
@@ -85,13 +103,14 @@ router.post('/loginReq', function (req, res, next) {
 // ----------query----------
 router.post('/query', function (req, res, next) {
   var id = req.body.id
+  var authority = req.body.authority
   var returnValue = []
   if (id === null || id === '') {
     var disease = req.body.condition.disease
     var country = req.body.condition.country
     var year = req.body.condition.year
     var doubleClick = req.body.condition.doubleClick
-    dbOperation.queryByDescription(disease, country, year, doubleClick)
+    dbOperation.queryByDescription(disease, country, year, doubleClick, authority)
       .then((rows) => {
         for (var i = 0; i < rows.length; i++) {
           returnValue.push(formGenerator.getBasicSources(rows[i]))
@@ -108,7 +127,7 @@ router.post('/query', function (req, res, next) {
       })
   }
   if (id != null) {
-    dbOperation.queryByReportId(id)
+    dbOperation.queryByReportId(id, authority)
       .then((rows) => {
         if (rows.length > 0) {
           for (var i = 0; i < rows.length; i++) {

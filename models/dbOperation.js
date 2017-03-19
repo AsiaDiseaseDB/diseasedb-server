@@ -68,13 +68,17 @@ module.exports = function (sqlConnect) {
     return util.exeSqlWithArgs(rawSql, [reportid], sqlConnect)
   }
 
-  dbOperation.queryByReportId = function (reportid) {
+  dbOperation.queryByReportId = function (reportid, authority) {
     var rawSql = 'SELECT * FROM `Basic sources` WHERE ReportID = ' +
-                 sqlConnect.escape(reportid)
+    sqlConnect.escape(reportid)
+    if (authority >= 3) {
+      rawSql += ' AND `Open access` = \'Yes\''
+    }
+    console.log(rawSql)
     return util.exeRawSql(rawSql, sqlConnect)
   }
 
-  dbOperation.queryByDescription = function (disease, country, year, checked) {
+  dbOperation.queryByDescription = function (disease, country, year, checked, authority) {
     var rawSql = 'SELECT * FROM `Basic sources` WHERE'
     //  TODO: 无害化处理，防止SQL注入攻击
     if (disease != null) {
@@ -95,6 +99,10 @@ module.exports = function (sqlConnect) {
     } else if (checked != null && !(year == null && country == null && disease == null)) {
       rawSql += ' AND `checked` = \'' + checked + '\''
     }
+    if (authority >= 3) {
+      rawSql += ' AND `Open access` = \'Yes\''
+    }
+    console.log(rawSql)
     return util.exeRawSql(rawSql, sqlConnect)
   }
 

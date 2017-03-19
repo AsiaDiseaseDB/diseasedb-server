@@ -233,18 +233,15 @@ module.exports = function (sqlConnect) {
           let worksheet = workbook.Sheets[workbook.SheetNames[0]]
           let jsonArr = XLSX.utils.sheet_to_json(worksheet)
           if (parseInt(i) === 0) {
-            console.log('------ i === 0 ------')
             for (let j in jsonArr) {
               let ReportID = dbState.getNewId('Basic Sources')
               let bid = parseInt(jsonArr[j].bid)
               idMap.b[bid] = ReportID
               jsonArr[j].ReportID = ReportID
-              console.log(jsonArr[j])
               let valuesStr = getValueString('Basic Sources', getHandledData('Basic Sources', jsonArr[j]))
               addPromises.push(dbOperation.add(valuesStr, 'Basic Sources'))
             }
           } else if (parseInt(i) === 1) {
-            console.log('------ i === 1 ------')
             for (let j in jsonArr) {
               let SurveyID = dbState.getNewId('Survey Description')
               let sid = parseInt(jsonArr[j].sid)
@@ -254,13 +251,11 @@ module.exports = function (sqlConnect) {
               if (idMap.b[bid] !== undefined) {
                 jsonArr[j].BasicSourcesReportID = idMap.b[bid]
               }
-              console.log(jsonArr[j])
               let valuesStr = getValueString('Survey Description',
                                              getHandledData('Survey Description', jsonArr[j]))
               addPromises.push(dbOperation.add(valuesStr, 'Survey Description'))
             }
           } else if (parseInt(i) === 2) {
-            console.log('------ i === 2 ------')
             for (let j in jsonArr) {
               let LocationID = dbState.getNewId('Location Information')
               let bid = parseInt(jsonArr[j].bid)
@@ -272,13 +267,11 @@ module.exports = function (sqlConnect) {
                 jsonArr[j].SurveyDescriptionBasicSourcesReportID = idMap.b[bid]
                 jsonArr[j].SurveyDescriptionSurveyID = idMap.s[sid]
               }
-              console.log(jsonArr[j])
               let valuesStr = getValueString('Location Information',
                                              getHandledData('Location Information', jsonArr[j]))
               addPromises.push(dbOperation.add(valuesStr, 'Location Information'))
             }
           } else if (parseInt(i) === 3) {
-            console.log('------ i === 3 ------')
             for (let j in jsonArr) {
               let DiseaseID = dbState.getNewId('Disease Data')
               let bid = parseInt(jsonArr[j].bid)
@@ -293,13 +286,11 @@ module.exports = function (sqlConnect) {
                 jsonArr[j].LocationInformationSurveyDescriptionSurveyID = idMap.s[sid]
                 jsonArr[j].LocationInformationLocationID1 = idMap.l[lid]
               }
-              console.log(jsonArr[j])
               let valuesStr = getValueString('Disease Data',
                                              getHandledData('Disease Data', jsonArr[j]))
               addPromises.push(dbOperation.add(valuesStr, 'Disease Data'))
             }
           } else if (parseInt(i) === 4) {
-            console.log('------ i === 4 ------')
             for (let j in jsonArr) {
               let InterventionID = dbState.getNewId('Intervention Data')
               let bid = parseInt(jsonArr[j].bid)
@@ -309,7 +300,6 @@ module.exports = function (sqlConnect) {
               let iid = parseInt(jsonArr[j].iid)
               idMap.i[iid] = InterventionID
               jsonArr[j].InterventionID = InterventionID
-              console.log(idMap)
               if (idMap.b[bid] !== undefined && idMap.s[sid] !== undefined &&
                   idMap.l[lid] !== undefined && idMap.d[did] !== undefined) {
                 jsonArr[j].DiseaseDataLReportID = idMap.b[bid]
@@ -317,7 +307,6 @@ module.exports = function (sqlConnect) {
                 jsonArr[j].DiseaseDataLocationInformationLocationID1 = idMap.l[lid]
                 jsonArr[j].DiseaseDataDiseaseID = idMap.d[did]
               }
-              console.log(jsonArr[j])
               let valuesStr = getValueString('Intervention Data',
                                              getHandledData('Intervention Data', jsonArr[j]))
               addPromises.push(dbOperation.add(valuesStr, 'Intervention Data'))
@@ -327,6 +316,9 @@ module.exports = function (sqlConnect) {
         Promise.all(addPromises)
           .then((rows) => {
             res.json({ success: true, err: null })
+            for (let j in filePathBuff) {
+              fs.rmdirSync(filePathBuff[j])
+            }
           })
           .catch((err) => {
             console.log('batch input catch error')
@@ -346,7 +338,7 @@ module.exports = function (sqlConnect) {
       let [bid, sid, lid, did] = [-1, -1, -1, -1]
       for (let i in jsonArr) {
         let id = dbState.getNewId(req.body.type)
-        console.log(req.body.bid)
+        // console.log(req.body.bid)
         switch (req.body.type) {
           case 'Basic Sources':
             bid = parseInt(req.body.bid)
