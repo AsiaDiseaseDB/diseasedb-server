@@ -44,7 +44,7 @@ app.use('/', index)
 
 //  no found page
 app.use(function (req, res) {
-  res.render('notfound')
+  res.render('home')
 })
 
 //  error page

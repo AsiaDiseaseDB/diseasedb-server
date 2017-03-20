@@ -80,7 +80,6 @@ module.exports = function (sqlConnect) {
 
   dbOperation.queryByDescription = function (disease, country, year, checked, authority) {
     var rawSql = 'SELECT * FROM `Basic Sources` WHERE'
-    //  TODO: 无害化处理，防止SQL注入攻击
     if (disease != null) {
       rawSql += ' `Disease` = \'' + disease + '\''
     }
@@ -102,7 +101,15 @@ module.exports = function (sqlConnect) {
     if (authority >= 3) {
       rawSql += ' AND `Open access` = \'Yes\''
     }
-    console.log(rawSql)
+    // console.log(rawSql)
+    return util.exeRawSql(rawSql, sqlConnect)
+  }
+
+  dbOperation.queryAll = function (authority) {
+    var rawSql = 'SELECT * FROM `Basic Sources`'
+    if (authority >= 3) {
+      rawSql += ' WHERE `Open access` = \'Yes\''
+    }
     return util.exeRawSql(rawSql, sqlConnect)
   }
 
@@ -137,7 +144,7 @@ module.exports = function (sqlConnect) {
     } else if (type === 'Intervention Data') {
       rawSQl = 'INSERT INTO `Intervention Data` (' + iColumns + ') values(' + args + ')'
     }
-    console.log(rawSQl)
+    // console.log(rawSQl)
     return util.exeRawSql(rawSQl, sqlConnect)
   }
 
@@ -293,7 +300,7 @@ module.exports = function (sqlConnect) {
     } else {
       console.log('err >> not match')
     }
-    console.log(sql)
+    // console.log(sql)
     return util.exeRawSql(sql, sqlConnect)
   }
 
