@@ -69,7 +69,7 @@ module.exports = function (sqlConnect) {
   }
 
   dbOperation.queryByReportId = function (reportid, authority) {
-    var rawSql = 'SELECT * FROM `Basic sources` WHERE ReportID = ' +
+    var rawSql = 'SELECT * FROM `Basic Sources` WHERE ReportID = ' +
     sqlConnect.escape(reportid)
     if (authority >= 3) {
       rawSql += ' AND `Open access` = \'Yes\''
@@ -79,7 +79,7 @@ module.exports = function (sqlConnect) {
   }
 
   dbOperation.queryByDescription = function (disease, country, year, checked, authority) {
-    var rawSql = 'SELECT * FROM `Basic sources` WHERE'
+    var rawSql = 'SELECT * FROM `Basic Sources` WHERE'
     //  TODO: 无害化处理，防止SQL注入攻击
     if (disease != null) {
       rawSql += ' `Disease` = \'' + disease + '\''
@@ -115,7 +115,7 @@ module.exports = function (sqlConnect) {
     } else if (type === 'Location Information') {
       rawSql = 'SELECT * FROM `Location Information` WHERE `Survey description_SurveyID`=' + id
     } else if (type === 'Disease Data') {
-      rawSql = 'SELECT * FROM `Disease data` WHERE `Location information_LocationID1`=' + id
+      rawSql = 'SELECT * FROM `Disease Data` WHERE `Location information_LocationID1`=' + id
     } else if (type === 'Intervention Data') {
       rawSql = 'SELECT * FROM `Intervention Data` WHERE `Disease data_DiseaseID`=' + id
     } else {
@@ -129,13 +129,13 @@ module.exports = function (sqlConnect) {
     if (type === 'Basic Sources') {
       rawSQl = 'INSERT INTO `Basic Sources` (' + bColumns + ') values(' + args + ')'
     } else if (type === 'Survey Description') {
-      rawSQl = 'INSERT INTO `Survey description` (' + sColumns + ') values(' + args + ')'
+      rawSQl = 'INSERT INTO `Survey Description` (' + sColumns + ') values(' + args + ')'
     } else if (type === 'Location Information') {
-      rawSQl = 'INSERT INTO `Location information` (' + lColumns + ') values(' + args + ')'
+      rawSQl = 'INSERT INTO `Location Information` (' + lColumns + ') values(' + args + ')'
     } else if (type === 'Disease Data') {
-      rawSQl = 'INSERT INTO `Disease data` (' + dColumns + ') values(' + args + ')'
+      rawSQl = 'INSERT INTO `Disease Data` (' + dColumns + ') values(' + args + ')'
     } else if (type === 'Intervention Data') {
-      rawSQl = 'INSERT INTO `Intervention data` (' + iColumns + ') values(' + args + ')'
+      rawSQl = 'INSERT INTO `Intervention Data` (' + iColumns + ') values(' + args + ')'
     }
     console.log(rawSQl)
     return util.exeRawSql(rawSQl, sqlConnect)
@@ -143,11 +143,11 @@ module.exports = function (sqlConnect) {
 
   dbOperation.delete = function (type, id) {
     if (type === 'Basic Sources') {
-      let deletesql1 = 'DELETE from `Intervention data` WHERE `Disease data_L_ReportID` = ' + id + ';'
-      let deletesql2 = 'DELETE from `Disease data` WHERE `L_ReportID` = ' + id + ';'
-      let deletesql3 = 'DELETE from `Location information` WHERE `Survey description_Basic sources_ReportID` = ' + id + ';'
-      let deletesql4 = 'DELETE from `Survey description` WHERE `Basic sources_ReportID` = ' + id + ';'
-      let deletesql5 = 'DELETE from `Basic sources` WHERE `ReportID` = ' + id + ';'
+      let deletesql1 = 'DELETE from `Intervention Data` WHERE `Disease data_L_ReportID` = ' + id + ';'
+      let deletesql2 = 'DELETE from `Disease Data` WHERE `L_ReportID` = ' + id + ';'
+      let deletesql3 = 'DELETE from `Location Information` WHERE `Survey description_Basic sources_ReportID` = ' + id + ';'
+      let deletesql4 = 'DELETE from `Survey Description` WHERE `Basic sources_ReportID` = ' + id + ';'
+      let deletesql5 = 'DELETE from `Basic Sources` WHERE `ReportID` = ' + id + ';'
       return Promise.all([
         util.exeRawSql(deletesql1, sqlConnect),
         util.exeRawSql(deletesql2, sqlConnect),
@@ -156,10 +156,10 @@ module.exports = function (sqlConnect) {
         util.exeRawSql(deletesql5, sqlConnect)
       ])
     } else if (type === 'Survey Description') {
-      let deletesql1 = 'DELETE from `Intervention data` WHERE `Disease data_Location information_Survey description_SurveyID` = ' + id
-      let deletesql2 = 'DELETE from `disease data` WHERE `Location information_Survey description_SurveyID` = ' + id + ';'
-      let deletesql3 = 'DELETE from `Location information` WHERE `Survey description_SurveyID` = ' + id + ';'
-      let deletesql4 = 'DELETE from `Survey description` WHERE `SurveyID` = ' + id + ';'
+      let deletesql1 = 'DELETE from `Intervention Data` WHERE `Disease data_Location information_Survey description_SurveyID` = ' + id
+      let deletesql2 = 'DELETE from `Disease Data` WHERE `Location information_Survey description_SurveyID` = ' + id + ';'
+      let deletesql3 = 'DELETE from `Location Information` WHERE `Survey description_SurveyID` = ' + id + ';'
+      let deletesql4 = 'DELETE from `Survey Description` WHERE `SurveyID` = ' + id + ';'
       return Promise.all([
         util.exeRawSql(deletesql1, sqlConnect),
         util.exeRawSql(deletesql2, sqlConnect),
@@ -167,23 +167,23 @@ module.exports = function (sqlConnect) {
         util.exeRawSql(deletesql4, sqlConnect)
       ])
     } else if (type === 'Location Information') {
-      let deletesql1 = 'DELETE from `Intervention data` WHERE `Disease data_Location information_LocationID1` = ' + id + ';'
-      let deletesql2 = 'DELETE from `disease data` WHERE `Location information_LocationID` = ' + id + ';'
-      let deletesql3 = 'DELETE from `Location information` WHERE `LocationID` = ' + id + ';'
+      let deletesql1 = 'DELETE from `Intervention Data` WHERE `Disease data_Location information_LocationID1` = ' + id + ';'
+      let deletesql2 = 'DELETE from `Disease Data` WHERE `Location information_LocationID` = ' + id + ';'
+      let deletesql3 = 'DELETE from `Location Information` WHERE `LocationID` = ' + id + ';'
       return Promise.all([
         util.exeRawSql(deletesql1, sqlConnect),
         util.exeRawSql(deletesql2, sqlConnect),
         util.exeRawSql(deletesql3, sqlConnect)
       ])
     } else if (type === 'Disease Data') {
-      let deletesql1 = 'DELETE from `Intervention data` WHERE `Disease data_DiseaseID`=' + id + ';'
-      let deletesql2 = 'DELETE from `Disease data` WHERE `DiseaseID` = ' + id + ';'
+      let deletesql1 = 'DELETE from `Intervention Data` WHERE `Disease data_DiseaseID`=' + id + ';'
+      let deletesql2 = 'DELETE from `Disease Data` WHERE `DiseaseID` = ' + id + ';'
       return Promise.all([
         util.exeRawSql(deletesql1, sqlConnect),
         util.exeRawSql(deletesql2, sqlConnect)
       ])
     } else if (type === 'Intervention Data') {
-      let deletesql1 = 'delete from `Intervention data` where `InterventionID`=' + id + ';'
+      let deletesql1 = 'delete from `Intervention Data` where `InterventionID`=' + id + ';'
       return util.exeRawSql(deletesql1, sqlConnect)
     } else {
       console.log('Type Error')
@@ -196,7 +196,7 @@ module.exports = function (sqlConnect) {
     var id = -1
     if (type === 'Basic Sources') {
       id = newData.ReportID
-      sql = 'update `basic sources` set ' +
+      sql = 'update `Basic Sources` set ' +
         '`Reporter` = ' + newData.Reporter +
         ',`Disease`= ' + newData.Disease +
         ',`Country`= ' + newData.Country +
@@ -267,7 +267,7 @@ module.exports = function (sqlConnect) {
         ' where DiseaseID = ' + id
     } else if (type === 'Intervention Data') {
       id = newData.InterventionID
-      sql = 'update `Intervention data` set ' +
+      sql = 'update `Intervention Data` set ' +
         '`Group`= ' + newData.Group +
         ',`Months after baseline`= ' + newData.MonthsAfterBaseline +
         ',`Drug`= ' + newData.Drug +
@@ -301,15 +301,15 @@ module.exports = function (sqlConnect) {
   dbOperation.getMaxID = function (type) {
     var selectStr = ''
     if (type === 'Basic Sources') {
-      selectStr = 'select MAX(ReportID) as ID from `basic sources`'
+      selectStr = 'select MAX(ReportID) as ID from `Basic Sources`'
     } else if (type === 'Survey Description') {
-      selectStr = 'select MAX(SurveyID) as ID from `survey description`'
+      selectStr = 'select MAX(SurveyID) as ID from `Survey Description`'
     } else if (type === 'Location Information') {
-      selectStr = 'select MAX(LocationID) as ID from `location information`'
+      selectStr = 'select MAX(LocationID) as ID from `Location Information`'
     } else if (type === 'Disease Data') {
-      selectStr = 'select MAX(DiseaseID) as ID from `disease data`'
+      selectStr = 'select MAX(DiseaseID) as ID from `Disease Data`'
     } else if (type === 'Intervention Data') {
-      selectStr = 'select MAX(InterventionID) as ID from `intervention data`'
+      selectStr = 'select MAX(InterventionID) as ID from `Intervention Data`'
     } else {
       console.log('type error')
       selectStr = ''
@@ -317,20 +317,6 @@ module.exports = function (sqlConnect) {
     return util.exeRawSql(selectStr, sqlConnect)
   }
 
-  // dbOperation.exportTable = function (id) {
-  //   var rawSqlB = 'SELECT * FROM `Basic Sources` WHERE `ReportID` = ?'
-  //   var rawSqlS = 'SELECT * FROM `Survey Description` WHERE `Basic sources_ReportID` = ?'
-  //   var rawSqlL = 'SELECT * FROM `Location Information` WHERE `Survey description_Basic sources_ReportID` = ?'
-  //   var rawSqlD = 'SELECT * FROM `Disease Data` WHERE `L_ReportID` = ?'
-  //   var rawSqlI = 'SELECT * FROM `Intervention data` WHERE `Disease data_L_ReportID` = ?'
-  //   return Promise.all([
-  //     util.exeSqlWithArgs(rawSqlB, [id], sqlConnect),
-  //     util.exeSqlWithArgs(rawSqlS, [id], sqlConnect),
-  //     util.exeSqlWithArgs(rawSqlL, [id], sqlConnect),
-  //     util.exeSqlWithArgs(rawSqlD, [id], sqlConnect),
-  //     util.exeSqlWithArgs(rawSqlI, [id], sqlConnect)
-  //   ])
-  // }
   //  获取整棵id树，传入根ID
   dbOperation.getIDTree = function (id) {
     // console.log('getidtree')
@@ -347,7 +333,7 @@ module.exports = function (sqlConnect) {
                   ',`Disease data_Location information_LocationID1`' +
                   ',`Disease data_DiseaseID`' +
                   ',`InterventionID` ' +
-                  'FROM `Intervention data` WHERE `Disease data_L_ReportID` = ?'
+                  'FROM `Intervention Data` WHERE `Disease data_L_ReportID` = ?'
     return Promise.all([
       util.exeSqlWithArgs(rawSqlS, [id], sqlConnect),
       util.exeSqlWithArgs(rawSqlL, [id], sqlConnect),
@@ -365,7 +351,7 @@ module.exports = function (sqlConnect) {
     } else if (type === 'Location Information') {
       rawSql = 'SELECT * FROM `Location Information` WHERE `LocationID`=' + id
     } else if (type === 'Disease Data') {
-      rawSql = 'SELECT * FROM `Disease data` WHERE `DiseaseID`=' + id
+      rawSql = 'SELECT * FROM `Disease Data` WHERE `DiseaseID`=' + id
     } else if (type === 'Intervention Data') {
       rawSql = 'SELECT * FROM `Intervention Data` WHERE `InterventionID`=' + id
     } else {
