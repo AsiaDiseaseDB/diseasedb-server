@@ -3,6 +3,7 @@ var path = require('path')
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
+var log4js = require('log4js')
 // const restc = require('restc')
 var index = require('./routes/index')
 

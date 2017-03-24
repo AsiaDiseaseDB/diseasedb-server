@@ -24,6 +24,14 @@ const iColumns = '`InterventionID`,`Group`,`Months after baseline`,`Drug`,`Frequ
                '`Disease data_Location information_LocationID1`,`Disease data_L_ReportID`,' +
                '`Disease data_Location information_Survey description_SurveyID`'
 
+function handleNullCol (col) {
+  if (col === undefined) {
+    return 'null'
+  } else {
+    return col
+  }
+}
+
 module.exports = function (sqlConnect) {
   var dbOperation = {}
 
@@ -201,73 +209,74 @@ module.exports = function (sqlConnect) {
   dbOperation.edit = function (type, newData) {
     var sql = ''
     var id = -1
+    console.log(newData)
     if (type === 'Basic Sources') {
       id = newData.ReportID
       sql = 'update `Basic Sources` set ' +
-        '`Reporter` = ' + newData.Reporter +
-        ',`Disease`= ' + newData.Disease +
-        ',`Country`= ' + newData.Country +
-        ',`Document Category`= ' + newData.DocumentCategory +
+        '`Reporter` = ' + handleNullCol(newData.Reporter) +
+        ',`Disease`= ' + handleNullCol(newData.Disease) +
+        ',`Country`= ' + handleNullCol(newData.Country) +
+        ',`Document Category`= ' + handleNullCol(newData.DocumentCategory) +
         ',`Journal` = ' + newData.Journal +
         ',`Title` = ' + newData.Title +
         ',`Authors`= ' + newData.Authors +
         ',`Year of Pub`=' + newData.YearOfPub +
-        ',`Volume`=' + newData.Volume +
-        ',`Issue`=' + newData.Issue +
-        ',`Page from`=' + newData.PageFrom +
-        ',`Page to`=' + newData.PageTo +
+        ',`Volume`=' + handleNullCol(newData.Volume) +
+        ',`Issue`=' + handleNullCol(newData.Issue) +
+        ',`Page from`=' + handleNullCol(newData.PageFrom) +
+        ',`Page to`=' + handleNullCol(newData.PageTo) +
         ',`Author contact needed`= ' + newData.AuthorContactNeeded +
         ',`Open access`= ' + newData.OpenAccess +
-        ',`checked`= ' + newData.Checked +
-        ',`note1`= ' + newData.Note1 + ' where ReportID =' + id
+        ',`checked`= ' + handleNullCol(newData.Checked) +
+        ',`note1`= ' + handleNullCol(newData.Note1) + ' where ReportID =' + id
     } else if (type === 'Survey Description') {
       id = newData.SurveyID
       sql = 'update `' + type + '` set ' + '`Basic sources_ReportID`= ' +
         newData.BasicSourcesReportID +
-        ',`Data type`= ' + newData.DataType +
-        ',`Survey type`= ' + newData.SurveyType +
-        ',`Month start`= ' + newData.MonthStart +
-        ',`Month finish`= ' + newData.MonthFinish +
-        ',`Year start`= ' + newData.YearStart +
-        ',`Year finish`= ' + newData.YearFinish +
-        ',`note2`= ' + newData.Note2 + ' where SurveyID = ' + id
+        ',`Data type`= ' + handleNullCol(newData.DataType) +
+        ',`Survey type`= ' + handleNullCol(newData.SurveyType) +
+        ',`Month start`= ' + handleNullCol(newData.MonthStart) +
+        ',`Month finish`= ' + handleNullCol(newData.MonthFinish) +
+        ',`Year start`= ' + handleNullCol(newData.YearStart) +
+        ',`Year finish`= ' + handleNullCol(newData.YearFinish) +
+        ',`note2`= ' + handleNullCol(newData.Note2) + ' where SurveyID = ' + id
     } else if (type === 'Location Information') {
       id = newData.LocationID
       sql = 'update `' + type + '` set ' +
         '`Survey description_Basic sources_ReportID`= ' + newData.SurveyDescriptionBasicSourcesReportID +
         ',`Survey description_SurveyID`= ' + newData.SurveyDescriptionSurveyID +
-        ',`ADM1`= ' + newData.ADM1 +
-        ',`ADM2`= ' + newData.ADM2 +
-        ',`ADM3`= ' + newData.ADM3 +
-        ',`Point name`= ' + newData.PointName +
-        ',`Point type`= ' + newData.PointType +
-        ',`Latitude`= ' + newData.Latitude +
-        ',`Longitude`= ' + newData.Longitude +
-        ',`Geo-reference sources`= ' + newData.GeoReferenceSources +
-        ',`note3`= ' + newData.Note3 + ' where LocationID = ' + id
+        ',`ADM1`= ' + handleNullCol(newData.ADM1) +
+        ',`ADM2`= ' + handleNullCol(newData.ADM2) +
+        ',`ADM3`= ' + handleNullCol(newData.ADM3) +
+        ',`Point name`= ' + handleNullCol(newData.PointName) +
+        ',`Point type`= ' + handleNullCol(newData.PointType) +
+        ',`Latitude`= ' + handleNullCol(newData.Latitude) +
+        ',`Longitude`= ' + handleNullCol(newData.Longitude) +
+        ',`Geo-reference sources`= ' + handleNullCol(newData.GeoReferenceSources) +
+        ',`note3`= ' + handleNullCol(newData.Note3) + ' where LocationID = ' + id
     } else if (type === 'Disease Data') {
       id = newData.DiseaseID
       sql = 'update `' + type + '` set ' +
-        '`Location information_LocationID`= ' + newData.LocationInformationLocationID +
+        '`Location information_LocationID`= ' + handleNullCol(newData.LocationInformationLocationID) +
         ',`Species`= ' + newData.Species +
-        ',`Diagnostic_symptoms`= ' + newData.DiagnosticSymptoms +
-        ',`Diagnostic_blood`= ' + newData.DiagnosticBlood +
-        ',`Diagnostic_skin`= ' + newData.DiagnosticSkin +
-        ',`Diagnostic_stool`= ' + newData.DiagnosticStool +
-        ',`Num_samples`= ' + newData.NumSamples +
-        ',`Num_specimen`= ' + newData.NumSpecimen +
-        ',`AgeLower`= ' + newData.AgeLower +
-        ',`AgeUpper`= ' + newData.AgeUpper +
-        ',`Num_examine`= ' + newData.NumExamine +
-        ',`Num_positive`= ' + newData.NumPositive +
-        ',`Percent_positive`= ' + newData.PercentPositive +
-        ',`Num_examine_male`= ' + newData.NumExamineMale +
-        ',`Num_positive_male`= ' + newData.NumPositiveMale +
-        ',`Percent_positive_male`= ' + newData.PercentPositiveMale +
-        ',`Num_examine_female`= ' + newData.NumExamineFemale +
-        ',`Num_positive_female`= ' + newData.NumPositiveFemale +
-        ',`Percent_positive_female`= ' + newData.PercentPositiveFemale +
-        ',`note4`= ' + newData.Note4 +
+        ',`Diagnostic_symptoms`= ' + handleNullCol(newData.DiagnosticSymptoms) +
+        ',`Diagnostic_blood`= ' + handleNullCol(newData.DiagnosticBlood) +
+        ',`Diagnostic_skin`= ' + handleNullCol(newData.DiagnosticSkin) +
+        ',`Diagnostic_stool`= ' + handleNullCol(newData.DiagnosticStool) +
+        ',`Num_samples`= ' + handleNullCol(newData.NumSamples) +
+        ',`Num_specimen`= ' + handleNullCol(newData.NumSpecimen) +
+        ',`AgeLower`= ' + handleNullCol(newData.AgeLower) +
+        ',`AgeUpper`= ' + handleNullCol(newData.AgeUpper) +
+        ',`Num_examine`= ' + handleNullCol(newData.NumExamine) +
+        ',`Num_positive`= ' + handleNullCol(newData.NumPositive) +
+        ',`Percent_positive`= ' + handleNullCol(newData.PercentPositive) +
+        ',`Num_examine_male`= ' + handleNullCol(newData.NumExamineMale) +
+        ',`Num_positive_male`= ' + handleNullCol(newData.NumPositiveMale) +
+        ',`Percent_positive_male`= ' + handleNullCol(newData.PercentPositiveMale) +
+        ',`Num_examine_female`= ' + handleNullCol(newData.NumExamineFemale) +
+        ',`Num_positive_female`= ' + handleNullCol(newData.NumPositiveFemale) +
+        ',`Percent_positive_female`= ' + handleNullCol(newData.PercentPositiveFemale) +
+        ',`note4`= ' + handleNullCol(newData.Note4) +
         ',`Location information_LocationID1`= ' + newData.LocationInformationLocationID1 +
         ',`L_ReportID`= ' + newData.LReportID +
         ',`Location information_Survey description_SurveyID`= ' + newData.LocationInformationSurveyDescriptionSurveyID +
@@ -275,23 +284,23 @@ module.exports = function (sqlConnect) {
     } else if (type === 'Intervention Data') {
       id = newData.InterventionID
       sql = 'update `Intervention Data` set ' +
-        '`Group`= ' + newData.Group +
-        ',`Months after baseline`= ' + newData.MonthsAfterBaseline +
-        ',`Drug`= ' + newData.Drug +
-        ',`Frequency per year`= ' + newData.FrequencyPerYear +
-        ',`Period (months)`= ' + newData.PeriodMonths +
-        ',`Coverage`= ' + newData.Coverage +
-        ',`Other method`= ' + newData.OtherMethod +
-        ',`I_Num_examine`= ' + newData.INumExamine +
-        ',`I_Num_positive`= ' + newData.INumPositive +
-        ',`I_Percent_positive`= ' + newData.IPercentPositive +
-        ',`I_Num_examine_male`= ' + newData.INumExamineMale +
-        ',`I_Num_positive_male`= ' + newData.INumPositiveMale +
-        ',`I_Percent_positive_male`= ' + newData.IPercentPositiveMale +
-        ',`I_Num_examine_female`= ' + newData.INumExamineFemale +
-        ',`I_Num_positive_female`= ' + newData.INumPositiveFemale +
-        ',`I_Percent_positive_female`= ' + newData.IPercentPositiveFemale +
-        ',`note5`= ' + newData.Note5 +
+        '`Group`= ' + handleNullCol(newData.Group) +
+        ',`Months after baseline`= ' + handleNullCol(newData.MonthsAfterBaseline) +
+        ',`Drug`= ' + handleNullCol(newData.Drug) +
+        ',`Frequency per year`= ' + handleNullCol(newData.FrequencyPerYear) +
+        ',`Period (months)`= ' + handleNullCol(newData.PeriodMonths) +
+        ',`Coverage`= ' + handleNullCol(newData.Coverage) +
+        ',`Other method`= ' + handleNullCol(newData.OtherMethod) +
+        ',`I_Num_examine`= ' + handleNullCol(newData.INumExamine) +
+        ',`I_Num_positive`= ' + handleNullCol(newData.INumPositive) +
+        ',`I_Percent_positive`= ' + handleNullCol(newData.IPercentPositive) +
+        ',`I_Num_examine_male`= ' + handleNullCol(newData.INumExamineMale) +
+        ',`I_Num_positive_male`= ' + handleNullCol(newData.INumPositiveMale) +
+        ',`I_Percent_positive_male`= ' + handleNullCol(newData.IPercentPositiveMale) +
+        ',`I_Num_examine_female`= ' + handleNullCol(newData.INumExamineFemale) +
+        ',`I_Num_positive_female`= ' + handleNullCol(newData.INumPositiveFemale) +
+        ',`I_Percent_positive_female`= ' + handleNullCol(newData.IPercentPositiveFemale) +
+        ',`note5`= ' + handleNullCol(newData.Note5) +
         ',`Disease data_DiseaseID`= ' + newData.DiseaseDataDiseaseID +
         ',`Disease data_Location information_LocationID1`= ' + newData.DiseaseDataLocationInformationLocationID1 +
         ',`Disease data_L_ReportID`= ' + newData.DiseaseDataLReportID +
@@ -300,7 +309,7 @@ module.exports = function (sqlConnect) {
     } else {
       console.log('err >> not match')
     }
-    // console.log(sql)
+    console.log(sql)
     return util.exeRawSql(sql, sqlConnect)
   }
 
