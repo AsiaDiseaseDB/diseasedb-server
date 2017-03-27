@@ -82,7 +82,7 @@ module.exports = function (sqlConnect) {
     if (authority >= 3) {
       rawSql += ' AND `Open access` = \'Yes\''
     }
-    console.log(rawSql)
+    // console.log(rawSql)
     return util.exeRawSql(rawSql, sqlConnect)
   }
 
@@ -209,7 +209,6 @@ module.exports = function (sqlConnect) {
   dbOperation.edit = function (type, newData) {
     var sql = ''
     var id = -1
-    console.log(newData)
     if (type === 'Basic Sources') {
       id = newData.ReportID
       sql = 'update `Basic Sources` set ' +
@@ -309,7 +308,6 @@ module.exports = function (sqlConnect) {
     } else {
       console.log('err >> not match')
     }
-    console.log(sql)
     return util.exeRawSql(sql, sqlConnect)
   }
 

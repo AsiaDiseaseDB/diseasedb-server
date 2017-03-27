@@ -1,5 +1,7 @@
 var express = require('express')
 var multer = require('multer')
+var fs = require('fs')
+var path = require('path')
 var upload = multer({ dest: 'uploads/' })
 var router = express.Router()
 
@@ -15,6 +17,13 @@ var getValueString = require('../controller/getValueString')
 //  配置主页
 router.get('/', function (req, res, next) {
   res.render('home')
+})
+
+router.get('/exportdemo', function (req, res) {
+  var result = fs.readFileSync(path.join(__dirname, '../', 'public', 'demo.zip'))
+  res.setHeader('Content-Type', 'application/zip')
+  res.setHeader('Content-Disposition', 'attachment; filename=' + 'demo.zip')
+  res.end(result, 'binary')
 })
 
 router.get('/exportexcel', excelOperation.exportExcel)
@@ -312,23 +321,6 @@ router.post('/edit', function (req, res, next) {
 router.post('/getid', function (req, res, next) {
   var type = req.body.type
   res.json({ id: dbState.getNewId(type) })
-  // dbOperation.getMaxID(type)
-  //   .then(function (rows) {
-  //     var num = 1
-  //     if (rows) {
-  //       num = rows[0].ID + 1
-  //     }
-  //     var returnValue = { id: num }
-  //     console.log(returnValue)
-  //     res.json(returnValue)
-  //   })
-  //   .catch((err) => {
-  //     console.log(err)
-  //     res.json({
-  //       id: -1,
-  //       err: err
-  //     })
-  //   })
 })
 
 router.post('/getidtree', function (req, res, next) {

@@ -1,5 +1,6 @@
 var nodeExcel = require('excel-export')
 var XLSX = require('xlsx')
+var fs = require('fs')
 
 var dbState = require('../models/dbState.js')
 
@@ -315,10 +316,10 @@ module.exports = function (sqlConnect) {
         }
         Promise.all(addPromises)
           .then((rows) => {
-            res.json({ success: true, err: null })
             for (let j in filePathBuff) {
-              fs.rmdirSync(filePathBuff[j])
+              fs.unlinkSync(filePathBuff[j])
             }
+            res.json({ success: true, err: null })
           })
           .catch((err) => {
             console.log('batch input catch error')
