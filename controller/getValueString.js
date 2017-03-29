@@ -13,7 +13,6 @@ module.exports = function (types, data) {
   switch (types) {
     case 0:
     case 'Basic Sources':
-      console.log(data)
       let volumeData = util.isEmpty(data.Volume) ? 'null' : data.Volume
       let issueData = util.isEmpty(data.Issue) ? 'null' : data.Issue
       let pageFromData = util.isEmpty(data.PageFrom) ? 'null' : data.PageFrom

@@ -8,5 +8,12 @@ var conn = mysql.createConnection({
 })
 
 conn.connect()
-
 module.exports = conn
+
+// module.exports = mysql.createPool({
+//   connectionLimit: 10,
+//   host: 'localhost',
+//   user: 'root',
+//   password: 'root',
+//   database: 'nodejs'
+// })

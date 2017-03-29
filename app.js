@@ -3,9 +3,8 @@ var path = require('path')
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
-var log4js = require('log4js')
-// const restc = require('restc')
-var index = require('./routes/index')
+// var log4js = require('log4js')
+const restc = require('restc')
 
 var app = express()
 
@@ -16,13 +15,13 @@ app.set('view engine', 'pug')
 app.set('port', process.env.PORT || 3000)
 
 //  静态资源存放在/public目录下
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(path.join(__dirname, 'public')))
 
 //  使用中间件
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
-// app.use(restc.express())
+app.use(restc.express())
 //  配置session
 app.use(session({
   secret: 'keyboard cat',
@@ -41,7 +40,8 @@ app.use(function (req, res, next) {
 })
 
 //  配置路由
-app.use('/', index)
+app.use('/manage', require('./routes/handleManage.js'))
+app.use('/', require('./routes/index'))
 
 //  no found page
 app.use(function (req, res) {
