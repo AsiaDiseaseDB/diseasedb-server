@@ -6,7 +6,6 @@ const basePath = path.join(__dirname, '../', 'store')
 module.exports = {
   // 由于文件很小，采用同步读写
   getNewId (type) {
-    console.log(__dirname)
     var data = fs.readFileSync(path.join(basePath, 'state.json'))
     var jsonObj = JSON.parse(data)
     var returnId = -1

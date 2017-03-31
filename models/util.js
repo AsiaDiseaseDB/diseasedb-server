@@ -4,7 +4,6 @@ module.exports = {
     return new Promise((resolve, reject) => {
       sqlConnect.query(rawSql, (err, rows, fields) => {
         if (err) {
-          console.log(err)
           reject(err)
         }
         resolve(rows)
@@ -13,11 +12,10 @@ module.exports = {
   },
   exeSqlWithArgs (rawSql, args, sqlConnect) {
     return new Promise((resolve, reject) => {
-      var query = sqlConnect.query(rawSql, args, (err, rows, fields) => {
+      sqlConnect.query(rawSql, args, (err, rows, fields) => {
         if (err) reject(err)
         resolve(rows)
       })
-      console.log(query.sql) 
     })
   },
   isEmpty (ele) {
