@@ -42,6 +42,7 @@ app.use(function (req, res, next) {
 //  配置路由
 app.use('/manage', require('./routes/handleManage.js'))
 app.use('/option', require('./routes/handleOption.js'))
+app.use('/report', require('./routes/handleIssue.js'))
 app.use('/', require('./routes/index'))
 
 //  no found page
