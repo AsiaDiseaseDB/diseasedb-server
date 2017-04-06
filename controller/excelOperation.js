@@ -173,10 +173,11 @@ module.exports = function (sqlConnect) {
     'IPercentPositiveFemale': true
   }
 
-  var idMap = { b: {}, s: {}, l: {}, d: {}, i: {} }
-  var filePathBuff = []
+  let idMap = {}
+  let filePathBuff = {}
+  let idBuff = {}
 
-  var dbOperation = require('../models/dbOperation.js')(sqlConnect)
+  let dbOperation = require('../models/dbOperation.js')(sqlConnect)
 
   return {
     exportExcel (req, res) {
@@ -219,25 +220,29 @@ module.exports = function (sqlConnect) {
         })
     },
     importExcel (req, res) {
-      if (parseInt(req.body.id) === 0) {
-        idMap = { b: {}, s: {}, l: {}, d: {}, i: {} }
-        filePathBuff = []
+      //  add multi-user support
+      let curUser = req.body.username
+      idBuff[curUser] = req.body.id
+
+      if (parseInt(idBuff[curUser]) === 0) {
+        idMap[curUser] = { b: {}, s: {}, l: {}, d: {}, i: {} }
+        filePathBuff[curUser] = []
       }
-      filePathBuff.push(req.file.path)
-      if (parseInt(req.body.id) < 4) {
+      filePathBuff[curUser].push(req.file.path)
+      if (parseInt(idBuff[curUser]) < 4) {
         res.json({ success: true, err: null })
-      } else if (parseInt(req.body.id) === 4) {
+      } else if (parseInt(idBuff[curUser]) === 4) {
         //  五个文件都上传完成
         let addPromises = []
-        for (let i in filePathBuff) {
-          let workbook = XLSX.readFile(filePathBuff[i])
+        for (let i in filePathBuff[curUser]) {
+          let workbook = XLSX.readFile(filePathBuff[curUser][i])
           let worksheet = workbook.Sheets[workbook.SheetNames[0]]
           let jsonArr = XLSX.utils.sheet_to_json(worksheet)
           if (parseInt(i) === 0) {
             for (let j in jsonArr) {
               let ReportID = dbState.getNewId('Basic Sources')
               let bid = parseInt(jsonArr[j].bid)
-              idMap.b[bid] = ReportID
+              idMap[curUser].b[bid] = ReportID
               jsonArr[j].ReportID = ReportID
               let valuesStr = getValueString('Basic Sources', getHandledData('Basic Sources', jsonArr[j]))
               addPromises.push(dbOperation.add(valuesStr, 'Basic Sources'))
@@ -247,10 +252,10 @@ module.exports = function (sqlConnect) {
               let SurveyID = dbState.getNewId('Survey Description')
               let sid = parseInt(jsonArr[j].sid)
               let bid = parseInt(jsonArr[j].bid)
-              idMap.s[sid] = SurveyID
+              idMap[curUser].s[sid] = SurveyID
               jsonArr[j].SurveyID = SurveyID
-              if (idMap.b[bid] !== undefined) {
-                jsonArr[j].BasicSourcesReportID = idMap.b[bid]
+              if (idMap[curUser].b[bid] !== undefined) {
+                jsonArr[j].BasicSourcesReportID = idMap[curUser].b[bid]
               }
               let valuesStr = getValueString('Survey Description',
                                              getHandledData('Survey Description', jsonArr[j]))
@@ -262,11 +267,11 @@ module.exports = function (sqlConnect) {
               let bid = parseInt(jsonArr[j].bid)
               let sid = parseInt(jsonArr[j].sid)
               let lid = parseInt(jsonArr[j].lid)
-              idMap.l[lid] = LocationID
+              idMap[curUser].l[lid] = LocationID
               jsonArr[j].LocationID = LocationID
-              if (idMap.b[bid] !== undefined && idMap.s[sid] !== undefined) {
-                jsonArr[j].SurveyDescriptionBasicSourcesReportID = idMap.b[bid]
-                jsonArr[j].SurveyDescriptionSurveyID = idMap.s[sid]
+              if (idMap[curUser].b[bid] !== undefined && idMap[curUser].s[sid] !== undefined) {
+                jsonArr[j].SurveyDescriptionBasicSourcesReportID = idMap[curUser].b[bid]
+                jsonArr[j].SurveyDescriptionSurveyID = idMap[curUser].s[sid]
               }
               let valuesStr = getValueString('Location Information',
                                              getHandledData('Location Information', jsonArr[j]))
@@ -279,13 +284,13 @@ module.exports = function (sqlConnect) {
               let sid = parseInt(jsonArr[j].sid)
               let lid = parseInt(jsonArr[j].lid)
               let did = parseInt(jsonArr[j].did)
-              idMap.d[did] = DiseaseID
+              idMap[curUser].d[did] = DiseaseID
               jsonArr[j].DiseaseID = DiseaseID
-              if (idMap.b[bid] !== undefined && idMap.s[sid] !== undefined &&
-                  idMap.l[lid] !== undefined) {
-                jsonArr[j].LReportID = idMap.b[bid]
-                jsonArr[j].LocationInformationSurveyDescriptionSurveyID = idMap.s[sid]
-                jsonArr[j].LocationInformationLocationID1 = idMap.l[lid]
+              if (idMap[curUser].b[bid] !== undefined && idMap[curUser].s[sid] !== undefined &&
+                  idMap[curUser].l[lid] !== undefined) {
+                jsonArr[j].LReportID = idMap[curUser].b[bid]
+                jsonArr[j].LocationInformationSurveyDescriptionSurveyID = idMap[curUser].s[sid]
+                jsonArr[j].LocationInformationLocationID1 = idMap[curUser].l[lid]
               }
               let valuesStr = getValueString('Disease Data',
                                              getHandledData('Disease Data', jsonArr[j]))
@@ -299,14 +304,14 @@ module.exports = function (sqlConnect) {
               let lid = parseInt(jsonArr[j].lid)
               let did = parseInt(jsonArr[j].did)
               let iid = parseInt(jsonArr[j].iid)
-              idMap.i[iid] = InterventionID
+              idMap[curUser].i[iid] = InterventionID
               jsonArr[j].InterventionID = InterventionID
-              if (idMap.b[bid] !== undefined && idMap.s[sid] !== undefined &&
-                  idMap.l[lid] !== undefined && idMap.d[did] !== undefined) {
-                jsonArr[j].DiseaseDataLReportID = idMap.b[bid]
-                jsonArr[j].DiseaseDataLocationInformationSurveyDescriptionSurveyID = idMap.s[sid]
-                jsonArr[j].DiseaseDataLocationInformationLocationID1 = idMap.l[lid]
-                jsonArr[j].DiseaseDataDiseaseID = idMap.d[did]
+              if (idMap[curUser].b[bid] !== undefined && idMap[curUser].s[sid] !== undefined &&
+                  idMap[curUser].l[lid] !== undefined && idMap[curUser].d[did] !== undefined) {
+                jsonArr[j].DiseaseDataLReportID = idMap[curUser].b[bid]
+                jsonArr[j].DiseaseDataLocationInformationSurveyDescriptionSurveyID = idMap[curUser].s[sid]
+                jsonArr[j].DiseaseDataLocationInformationLocationID1 = idMap[curUser].l[lid]
+                jsonArr[j].DiseaseDataDiseaseID = idMap[curUser].d[did]
               }
               let valuesStr = getValueString('Intervention Data',
                                              getHandledData('Intervention Data', jsonArr[j]))
@@ -316,8 +321,8 @@ module.exports = function (sqlConnect) {
         }
         Promise.all(addPromises)
           .then((rows) => {
-            for (let j in filePathBuff) {
-              fs.unlinkSync(filePathBuff[j])
+            for (let j in filePathBuff[curUser]) {
+              fs.unlinkSync(filePathBuff[curUser][j])
             }
             res.json({ success: true, err: null })
           })

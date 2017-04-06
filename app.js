@@ -4,7 +4,7 @@ var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
 // var log4js = require('log4js')
-const restc = require('restc')
+// const restc = require('restc')
 
 var app = express()
 
@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(restc.express())
+// app.use(restc.express())
 //  配置session
 app.use(session({
   secret: 'keyboard cat',
