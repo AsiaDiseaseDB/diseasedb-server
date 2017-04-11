@@ -23,10 +23,9 @@ module.exports = function (sqlConnect) {
   }
 
   userOperation.queryUser = function (username) {
-        //  TODO: username无害化处理
     return new Promise(function (resolve, reject) {
       var sqlExp = 'SELECT * FROM users WHERE name = ' +
-                sqlConnect.escape(username)
+                   sqlConnect.escape(username)
       sqlConnect.query(sqlExp, function (err, rows, fields) {
         if (err) reject(err)
         resolve(rows)

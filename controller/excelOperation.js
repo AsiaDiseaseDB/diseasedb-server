@@ -4,7 +4,7 @@ var fs = require('fs')
 
 var dbState = require('../models/dbState.js')
 
-var getValueString = require('../controller/getValueString')
+var getValueString = require('../lib/getValueString')
 
 function addQuote (form, ex) {
   var newObj = {}

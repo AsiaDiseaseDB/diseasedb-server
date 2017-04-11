@@ -12,7 +12,7 @@ var formGenerator = require('../models/formGenerator.js')
 var dbState = require('../models/dbState.js')
 // var util = require('../models/util.js')
 var excelOperation = require('../controller/excelOperation.js')(sqlConnect)
-var getValueString = require('../controller/getValueString')
+var getValueString = require('../lib/getValueString')
 
 //  配置主页
 router.get('/', function (req, res, next) {
