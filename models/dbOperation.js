@@ -152,7 +152,7 @@ module.exports = function (sqlConnect) {
     } else if (type === 'Intervention Data') {
       rawSQl = 'INSERT INTO `Intervention Data` (' + iColumns + ') values(' + args + ')'
     }
-    // console.log(rawSQl)
+    console.log(rawSQl)
     return util.exeRawSql(rawSQl, sqlConnect)
   }
 

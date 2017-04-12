@@ -26,16 +26,12 @@ module.exports = {
     let data = fs.readFileSync(path.join(basePath, 'options.json'))
     let jsonObj = JSON.parse(data)
     let newOptions = []
-    console.log('----------------------')
-    console.log(jsonObj[catagory][optName])
     for (let i in jsonObj[catagory][optName]) {
       if (jsonObj[catagory][optName][i] !== payload) {
         newOptions.push(jsonObj[catagory][optName][i])
       }
     }
     jsonObj[catagory][optName] = newOptions
-    console.log(jsonObj[catagory][optName])
-    console.log('----------------------')
     fs.writeFileSync(path.join(basePath, 'options.json'), JSON.stringify(jsonObj))
     return true
   }

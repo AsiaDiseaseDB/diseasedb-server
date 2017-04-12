@@ -12,7 +12,7 @@ var app = express()
 app.set('view engine', 'pug')
 
 //  设置链接端口
-app.set('port', process.env.PORT || 3000)
+app.set('port', process.env.PORT || 80)
 
 //  静态资源存放在/public目录下
 app.use(express.static(path.join(__dirname, 'public')))
@@ -32,7 +32,7 @@ app.use(session({
 
 //  配置跨域请求
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:8080')
+  res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
   res.header('Access-Control-Allow-Headers', 'Content-Type')
   res.header('Access-Control-Allow-Credentials', 'true')

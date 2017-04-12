@@ -268,8 +268,7 @@ router.post('/getidcontent', function (req, res, next) {
 
 // -------增添操作----add---------------
 router.post('/add', function (req, res, next) {
-  // var types = req.body.type
-  // console.log(types)
+  console.log('add req')
   var valuesStr = getValueString(req.body.type, req.body.data)
   dbOperation.add(valuesStr, req.body.type)
     .then(function (rows) {
