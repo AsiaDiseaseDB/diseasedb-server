@@ -12,7 +12,7 @@ var app = express()
 app.set('view engine', 'pug')
 
 //  设置链接端口
-app.set('port', process.env.PORT || 80)
+app.set('port', process.env.PORT || 3000)
 
 //  静态资源存放在/public目录下
 app.use(express.static(path.join(__dirname, 'public')))

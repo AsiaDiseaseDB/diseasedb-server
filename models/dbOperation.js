@@ -113,10 +113,13 @@ module.exports = function (sqlConnect) {
     return util.exeRawSql(rawSql, sqlConnect)
   }
 
-  dbOperation.queryAll = function (authority) {
+  dbOperation.queryAll = function (authority, limit) {
     var rawSql = 'SELECT * FROM `Basic Sources`'
     if (authority >= 3) {
       rawSql += ' WHERE `Open access` = \'Yes\''
+    }
+    if (limit !== undefined) {
+      rawSql += ' LIMIT ' + parseInt(limit)
     }
     return util.exeRawSql(rawSql, sqlConnect)
   }

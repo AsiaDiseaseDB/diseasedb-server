@@ -155,11 +155,12 @@ router.post('/query', function (req, res, next) {
 
 router.post('/queryAll', function (req, res, next) {
   var authority = req.body.authority
+  var limit = req.body.limit
   var returnValue = []
-  dbOperation.queryAll(authority)
+  dbOperation.queryAll(authority, limit)
     .then((rows) => {
       if (rows.length > 0) {
-        for (var i = 0; i < rows.length; i++) {
+        for (let i = 0; i < rows.length; i++) {
           returnValue.push(formGenerator.getBasicSources(rows[i]))
         }
         res.json({ result: returnValue, err: null })
